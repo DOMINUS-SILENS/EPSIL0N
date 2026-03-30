@@ -1,0 +1,7 @@
+# Ignore database dumps (they contain live data)
+database/dumps/
+database/dumps/*.sql
+database/dumps/*.sql.gz
+
+# But keep the directory structure
+!database/dumps/.gitkeep
