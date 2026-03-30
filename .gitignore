@@ -1,10 +1,38 @@
-erp/
-frontend/node_modules/
-frontend/dist/
-node_modules/
-dist/
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Env
 .env
 .env.*
 !.env.example
-.vscode/
-.idea/
+
+# Windows ADS pollution
+*:Zone.Identifier
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Laravel / PHP
+erp/vendor/
+erp/storage/logs/*
+erp/storage/framework/cache/*
+erp/storage/framework/sessions/*
+erp/storage/framework/views/*
+erp/bootstrap/cache/*.php
+
+# Optional generated artifacts
+dist/
+build/
+tmp/
+temp/
