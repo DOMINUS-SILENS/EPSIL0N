@@ -1,0 +1,82 @@
+src/modules/commercial/hooks/usePromotions.ts(91,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/commercial/hooks/usePromotions.ts(107,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/commercial/pages/PricePreviewPage.tsx(160,37): error TS2339: Property 'applied_promotions' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(160,61): error TS7006: Parameter 'promo' implicitly has an 'any' type.
+src/modules/commercial/pages/PricePreviewPage.tsx(160,68): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/modules/commercial/pages/PricePreviewPage.tsx(183,52): error TS2339: Property 'total_discount' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(197,49): error TS2339: Property 'final_amount' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(197,82): error TS2339: Property 'final_amount' does not exist on type 'AxiosResponse<{ total_discount: number; applied_promotions: { promotion_id: number; promotion_name: string; discount_amount: number; }[]; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(206,49): error TS2339: Property 'total_discount' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(243,48): error TS2339: Property 'total_discount' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/commercial/pages/PricePreviewPage.tsx(256,43): error TS2339: Property 'total_discount' does not exist on type 'AxiosResponse<{ discount_amount: number; discount_percentage: number; final_amount: number; }, any, {}>'.
+src/modules/crm/components/LeadKanbanBoard.tsx(1,22): error TS2307: Cannot find module '../../api/leadsApi' or its corresponding type declarations.
+src/modules/crm/hooks/useCustomers.ts(85,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/crm/hooks/useCustomers.ts(101,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/crm/hooks/useInteractions.ts(75,15): error TS6133: 'err' is declared but its value is never read.
+src/modules/crm/hooks/useInteractions.ts(80,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/crm/hooks/useInteractions.ts(80,23): error TS6133: 'error' is declared but its value is never read.
+src/modules/crm/hooks/useInteractions.ts(96,17): error TS6133: 'response' is declared but its value is never read.
+src/modules/crm/hooks/useOpportunities.ts(30,44): error TS2345: Argument of type 'OpportunitiesParams | undefined' is not assignable to parameter of type 'Record<string, unknown> | undefined'.
+  Type 'OpportunitiesParams' is not assignable to type 'Record<string, unknown>'.
+    Index signature for type 'string' is missing in type 'OpportunitiesParams'.
+src/modules/crm/hooks/useOpportunities.ts(80,81): error TS2345: Argument of type '(old: Opportunity | undefined) => { title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; ... 12 more ...; updated_at: string; } | undefined' is not assignable to parameter of type 'Updater<Opportunity | undefined, Opportunity | undefined>'.
+  Type '(old: Opportunity | undefined) => { title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; ... 12 more ...; updated_at: string; } | undefined' is not assignable to type '(input: Opportunity | undefined) => Opportunity | undefined'.
+    Type '{ title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; assigned_to?: number | undefined; id: number; ... 10 more ...; updated_at: string; } | undefined' is not assignable to type 'Opportunity | undefined'.
+      Type '{ title: string; description?: string; value: number; currency: string; stage: string; probability: number; expected_close_date: string; assigned_to?: number; id: number; reference: string; ... 9 more ...; updated_at: string; }' is not assignable to type 'Opportunity'.
+        Types of property 'stage' are incompatible.
+          Type 'string' is not assignable to type '"prospecting" | "qualification" | "proposal" | "negotiation" | "closed_won" | "closed_lost"'.
+src/modules/crm/pages/CustomersListPage.tsx(121,26): error TS2304: Cannot find name 'MapPin'.
+src/modules/crm/pages/CustomersListPage.tsx(145,26): error TS2304: Cannot find name 'MoreVertical'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(86,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(87,71): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(227,63): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(232,35): error TS18048: 'opportunity.expected_revenue' is possibly 'undefined'.
+src/modules/delivery/pages/ToursListPage.tsx(163,96): error TS2339: Property 'id' does not exist on type '{ original: Tour; }'.
+src/modules/ecommerce/pages/WebOrdersPage.tsx(102,65): error TS2304: Cannot find name 'SettingsSync'.
+src/modules/ecommerce/pages/WebOrdersPage.tsx(108,24): error TS2304: Cannot find name 'MoreVertical'.
+src/modules/erp/hooks/useProducts.ts(64,15): error TS6133: 'err' is declared but its value is never read.
+src/modules/erp/hooks/useProducts.ts(69,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/erp/hooks/useProducts.ts(69,23): error TS6133: 'error' is declared but its value is never read.
+src/modules/fleet/pages/FleetListPage.tsx(124,15): error TS2322: Type '"ghost" | "secondary"' is not assignable to type '"link" | "default" | "destructive" | "outline" | "subtle" | "ghost" | null | undefined'.
+  Type '"secondary"' is not assignable to type '"link" | "default" | "destructive" | "outline" | "subtle" | "ghost" | null | undefined'.
+src/modules/fleet/pages/FleetListPage.tsx(131,15): error TS2322: Type '"ghost" | "secondary"' is not assignable to type '"link" | "default" | "destructive" | "outline" | "subtle" | "ghost" | null | undefined'.
+  Type '"secondary"' is not assignable to type '"link" | "default" | "destructive" | "outline" | "subtle" | "ghost" | null | undefined'.
+src/modules/fleet/pages/FleetListPage.tsx(176,110): error TS2339: Property 'id' does not exist on type '{ original: Vehicle; }'.
+src/modules/fleet/pages/VehicleDetailsPage.tsx(20,37): error TS2322: Type '"/fleet/vehicles/$vehicleId"' is not assignable to type 'ConstrainLiteral<"/fleet/vehicles/$vehicleId", "/login" | "__root__" | "/protected" | "/protected/" | "/protected/settings" | "/protected/settings/general" | "/protected/settings/security" | ... 106 more ... | "/protected/projects/milestones", "/login" | ... 112 more ... | "/protected/projects/milestones">'.
+src/modules/fleet/pages/VehicleDetailsPage.tsx(24,51): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/modules/fleet/pages/VehicleDetailsPage.tsx(25,51): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/modules/fleet/pages/VehicleDetailsPage.tsx(26,55): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(15,18): error TS2304: Cannot find name 'ColumnDef'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(15,28): error TS2304: Cannot find name 'LeaveRequest'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(16,61): error TS2339: Property 'row' does not exist on type 'unknown'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(18,58): error TS2339: Property 'row' does not exist on type 'unknown'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(20,57): error TS2339: Property 'row' does not exist on type 'unknown'.
+src/modules/hr/pages/LeaveRequestsPage.tsx(27,30): error TS2304: Cannot find name 'LeaveRequest'.
+src/modules/presales/pages/CampaignDetailsPage.tsx(39,38): error TS2322: Type '"/presales/campaigns/$campaignId"' is not assignable to type 'ConstrainLiteral<"/presales/campaigns/$campaignId", "/login" | "__root__" | "/protected" | "/protected/" | "/protected/settings" | "/protected/settings/general" | "/protected/settings/security" | ... 106 more ... | "/protected/projects/milestones", "/login" | ... 112 more ... | "/protected/projects/milestones">'.
+src/modules/presales/pages/CampaignDetailsPage.tsx(43,70): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/modules/presales/pages/CampaignDetailsPage.tsx(44,69): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/modules/presales/pages/CampaignDetailsPage.tsx(65,61): error TS2322: Type '"/presales/campaigns"' is not assignable to type '"/login" | "/" | "/crm/leads" | "/sales/orders" | "/inventory/warehouses" | "/purchasing/orders" | "/accounting/invoices" | "/hr/employees" | "/delivery/fleet" | "/fleet" | ... 102 more ... | ".."'.
+src/modules/presales/pages/CampaignsListPage.tsx(112,43): error TS2322: Type '"/presales/campaigns/new"' is not assignable to type '"/login" | "/" | "/crm/leads" | "/sales/orders" | "/inventory/warehouses" | "/purchasing/orders" | "/accounting/invoices" | "/hr/employees" | "/delivery/fleet" | "/fleet" | ... 102 more ... | ".."'.
+src/modules/presales/pages/CampaignsListPage.tsx(141,46): error TS2322: Type '"/presales/campaigns/$campaignId"' is not assignable to type '"/login" | "/" | "/crm/leads" | "/sales/orders" | "/inventory/warehouses" | "/purchasing/orders" | "/accounting/invoices" | "/hr/employees" | "/delivery/fleet" | "/fleet" | ... 102 more ... | ".."'.
+src/modules/presales/pages/CampaignsListPage.tsx(141,95): error TS2353: Object literal may only specify known properties, and 'campaignId' does not exist in type 'ParamsReducerFn<RouterCore<Route<Register, any, "/", "/", string, "__root__", undefined, {}, {}, AnyContext, AnyContext, {}, undefined, readonly [Route<...>, Route<...>], unknown, unknown, unknown, undefined>, "never", false, RouterHistory, Record<...>>, "PATH", string, "/presales/campaigns/$campaignId">'.
+src/modules/presales/pages/CampaignsListPage.tsx(141,116): error TS2339: Property 'id' does not exist on type '{ original: Campaign; }'.
+src/modules/reports/pages/SFAPerformancePage.tsx(182,20): error TS2304: Cannot find name 'Badge'.
+src/modules/reports/pages/SFAPerformancePage.tsx(183,22): error TS2304: Cannot find name 'Award'.
+src/modules/reports/pages/SFAPerformancePage.tsx(185,21): error TS2304: Cannot find name 'Badge'.
+src/modules/sales/hooks/useOrders.ts(41,19): error TS2571: Object is of type 'unknown'.
+src/modules/sales/hooks/useOrders.ts(100,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/sales/index.ts(2,15): error TS2307: Cannot find module './pages' or its corresponding type declarations.
+src/modules/sales/index.ts(3,15): error TS2307: Cannot find module './components' or its corresponding type declarations.
+src/modules/sales/index.ts(4,15): error TS2307: Cannot find module './hooks' or its corresponding type declarations.
+src/modules/sfa/hooks/useVisits.ts(92,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/sfa/hooks/useVisits.ts(109,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/trademkt/pages/ComplianceDashboardPage.tsx(16,9): error TS6133: '_recentTasks' is declared but its value is never read.
+src/modules/trademkt/pages/ExecutionTaskDetailsPage.tsx(27,34): error TS2322: Type '"/trademkt/executions/$taskId"' is not assignable to type 'ConstrainLiteral<"/trademkt/executions/$taskId", "/login" | "__root__" | "/protected" | "/protected/" | "/protected/settings" | "/protected/settings/general" | "/protected/settings/security" | ... 106 more ... | "/protected/projects/milestones", "/login" | ... 112 more ... | "/protected/projects/milestones">'.
+src/modules/trademkt/pages/ExecutionTaskDetailsPage.tsx(221,8): error TS2532: Object is possibly 'undefined'.
+src/modules/trademkt/pages/ExecutionTasksPage.tsx(202,27): error TS2304: Cannot find name 'Row'.
+src/modules/trademkt/pages/PlanogramsListPage.tsx(131,9): error TS2322: Type '(row: Row<Planogram>) => Promise<void>' is not assignable to type '(row: { original: Planogram; }) => void'.
+  Types of parameters 'row' and 'row' are incompatible.
+    Type '{ original: Planogram; }' is missing the following properties from type 'Row<Planogram>': _getAllCellsByColumnId, _uniqueValuesCache, _valuesCache, depth, and 37 more.

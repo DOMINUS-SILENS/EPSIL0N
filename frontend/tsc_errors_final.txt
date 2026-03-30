@@ -1,0 +1,34 @@
+src/modules/crm/components/LeadKanbanBoard.tsx(1,22): error TS2307: Cannot find module '../../api/leadsApi' or its corresponding type declarations.
+src/modules/crm/hooks/useOpportunities.ts(30,44): error TS2345: Argument of type 'OpportunitiesParams | undefined' is not assignable to parameter of type 'Record<string, unknown> | undefined'.
+  Type 'OpportunitiesParams' is not assignable to type 'Record<string, unknown>'.
+    Index signature for type 'string' is missing in type 'OpportunitiesParams'.
+src/modules/crm/hooks/useOpportunities.ts(80,81): error TS2345: Argument of type '(old: Opportunity | undefined) => { title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; ... 12 more ...; updated_at: string; } | undefined' is not assignable to parameter of type 'Updater<Opportunity | undefined, Opportunity | undefined>'.
+  Type '(old: Opportunity | undefined) => { title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; ... 12 more ...; updated_at: string; } | undefined' is not assignable to type '(input: Opportunity | undefined) => Opportunity | undefined'.
+    Type '{ title: string; description?: string | undefined; value: number; currency: string; stage: string; probability: number; expected_close_date: string; assigned_to?: number | undefined; id: number; ... 10 more ...; updated_at: string; } | undefined' is not assignable to type 'Opportunity | undefined'.
+      Type '{ title: string; description?: string; value: number; currency: string; stage: string; probability: number; expected_close_date: string; assigned_to?: number; id: number; reference: string; ... 9 more ...; updated_at: string; }' is not assignable to type 'Opportunity'.
+        Types of property 'stage' are incompatible.
+          Type 'string' is not assignable to type '"prospecting" | "qualification" | "proposal" | "negotiation" | "closed_won" | "closed_lost"'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(9,1): error TS6192: All imports in import declaration are unused.
+src/modules/crm/pages/OpportunityDetailPage.tsx(88,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(89,71): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(229,63): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/modules/crm/pages/OpportunityDetailPage.tsx(234,35): error TS18048: 'opportunity.expected_revenue' is possibly 'undefined'.
+src/modules/delivery/pages/ToursListPage.tsx(163,96): error TS2339: Property 'id' does not exist on type '{ original: Tour; }'.
+src/modules/erp/hooks/useProducts.ts(64,15): error TS6133: 'err' is declared but its value is never read.
+src/modules/erp/hooks/useProducts.ts(69,17): error TS6133: 'data' is declared but its value is never read.
+src/modules/erp/hooks/useProducts.ts(69,23): error TS6133: 'error' is declared but its value is never read.
+src/modules/reports/pages/SFAPerformancePage.tsx(182,20): error TS2304: Cannot find name 'Badge'.
+src/modules/reports/pages/SFAPerformancePage.tsx(183,22): error TS2304: Cannot find name 'Award'.
+src/modules/reports/pages/SFAPerformancePage.tsx(185,21): error TS2304: Cannot find name 'Badge'.
+src/modules/sales/hooks/useOrders.ts(41,19): error TS2571: Object is of type 'unknown'.
+src/modules/sales/hooks/useOrders.ts(100,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/sales/index.ts(2,15): error TS2307: Cannot find module './pages' or its corresponding type declarations.
+src/modules/sales/index.ts(3,15): error TS2307: Cannot find module './components' or its corresponding type declarations.
+src/modules/sales/index.ts(4,15): error TS2307: Cannot find module './hooks' or its corresponding type declarations.
+src/modules/sfa/hooks/useVisits.ts(92,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/sfa/hooks/useVisits.ts(109,19): error TS18046: 'error' is of type 'unknown'.
+src/modules/trademkt/pages/ComplianceDashboardPage.tsx(16,9): error TS6133: '_recentTasks' is declared but its value is never read.
+src/modules/trademkt/pages/ExecutionTasksPage.tsx(202,27): error TS2304: Cannot find name 'Row'.
