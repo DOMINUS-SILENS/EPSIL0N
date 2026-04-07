@@ -38,8 +38,9 @@ final class CustomerTest extends TestCase
         $events4 = $res4->unwrap();
         $customer2->apply($events4[0]);
 
-        $this->assertEquals($events1, $events3);
-        $this->assertEquals($events2, $events4);
+        // Check determinism on domain payload (not EventIds which are generated)
+        $this->assertSame($events1[0]->toArray(), $events3[0]->toArray());
+        $this->assertSame($events2[0]->toArray(), $events4[0]->toArray());
         $this->assertSame($customer1->getName(), $customer2->getName());
     }
 
@@ -85,8 +86,8 @@ final class CustomerTest extends TestCase
     {
         $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
         $events = [
-            new CustomerCreated('a1', 'Alice'),
-            new CustomerRenamed('a1', 'Alice Revised'),
+            CustomerCreated::forTest('a1', 'Alice'),
+            CustomerRenamed::forTest('a1', 'Alice Revised'),
         ];
 
         $customer = new Customer('a1', $tenantId);
