@@ -1,136 +1,80 @@
-# Roadmap — Phase 2.5: Runtime Spine Completion
+# Roadmap — EPSILON Kernel Foundation
 
 ## Overview
 
-**Goal:** Transform kernel from semantic substrate to runnable infrastructure.
-
-**Approach:** Test-first — write 7 failing integration tests, then implement to make them pass.
-
----
-
-## Phase 1: Integration Test Harness
-
-**Goal:** Create test infrastructure that can actually run against PostgreSQL.
-
-**Requirements:** None (infrastructure phase)
-
-**Success Criteria:**
-- Test database connection established
-- Schema migrations run per test suite
-- Integration test base class functional
-- Tests fail cleanly (not with infrastructure errors)
+**Goal:** Transform kernel from semantic substrate to a production-grade Event Sourcing engine.
+**Current Status:** Phase 2.5 (Runtime Spine) Complete. Write-side is operational.
 
 ---
 
-## Phase 2: Failing Test Suite
+## Milestone 1: Runtime Spine (COMPLETE ✅)
+*The transition from semantic primitives to a runnable execution engine.*
 
-**Goal:** Write all 7 kernel truth tests. All must fail for legitimate reasons.
-
-**Requirements:** TEST-01 through TEST-07
-
-**Success Criteria:**
-- All 7 tests exist in `tests/Integration/EventStore/`
-- All 7 tests fail with "implementation missing" type errors
-- Test fixture aggregate exists
-- Test domain events exist
-
----
-
-## Phase 3: AggregateRoot Base Class
-
-**Goal:** Implement only what tests require. Nothing more.
-
-**Requirements:** AGG-01 through AGG-05
-
-**Success Criteria:**
-- `record()` appends to pending buffer
-- `apply()` dispatches to handler
-- `replay()` reconstructs from history without re-recording
-- Version tracking works
-- `pullUncommittedEvents()` returns pending events
+- **Phase 1: Integration Test Harness** - Established PostgreSQL test infra.
+- **Phase 2: Failing Test Suite** - Defined kernel truth tests.
+- **Phase 3: AggregateRoot Base Class** - Implemented event-sourced state container.
+- **Phase 4: DomainEvent Contracts** - Defined event envelopes and metadata.
+- **Phase 5: EventStore Interface** - Defined persistence contracts.
+- **Phase 6: PostgreSQL EventStore Implementation** - Hardened concurrency and persistence.
+- **Phase 7: Tenant Isolation Enforcement** - Structural tenant boundary enforcement.
+- **Phase 8: Spine Verification** - Full Load → Mutate → Save cycle proven.
 
 ---
 
-## Phase 4: DomainEvent Contracts
+## Milestone 2: The Read Side (Current Focus)
+*Turning the event log into queryable state via CQRS.*
 
-**Goal:** Define event envelope and metadata structure.
+### Phase 5: Projection Infrastructure
+- **Goal:** Enable the kernel to turn the event log into queryable state.
+- **Key Tasks:**
+    - Implement `IEventProjector` interface.
+    - Create the `ProjectionEngine` to consume the event stream.
+    - Implement first concrete Read Model (state table).
+    - Establish "Event → Projector" dispatch loop.
+- **Success Criteria:** Events in `EventStore` are automatically reflected in Read Model tables.
 
-**Requirements:** EVT-01 through EVT-04
+### Phase 6: CQRS Routing (Command/Query Bus)
+- **Goal:** Establish a clean separation between mutation and retrieval.
+- **Key Tasks:**
+    - Implement `ICommandBus` and `IQueryBus`.
+    - Create routing layer to dispatch queries to read models.
+    - Implement `IdempotencyGuard` using `CorrelationId`.
+- **Success Criteria:** Requests are routed as either Commands or Queries without overlapping logic.
 
-**Success Criteria:**
-- Event envelope has required fields
-- Metadata structure is stable
-- Serialization boundary defined
-- Tests reference concrete event types
+### Phase 6.5: Offline Event Queue
+- **Goal:** Enable offline-first mobile sync with local event queue and replay on reconnect.
+- **Key Tasks:**
+    - Implement `IMobileOfflineQueue` interface.
+    - Create `PendingEvent` value object.
+    - Create `PostgreSqlOfflineQueue` implementation with new tables.
+    - Implement `QueueProcessor` for replay logic.
+    - Create `ConflictResolver` with merge strategies (LastWriteWins, ServerWins, ClientWins, PromptUser).
+- **Success Criteria:** Mobile clients can queue events offline and replay on reconnect with proper conflict handling.
+- **Requirements:** OFFLINE-QUEUE-01, OFFLINE-QUEUE-02, OFFLINE-QUEUE-03
 
----
-
-## Phase 5: EventStore Interface
-
-**Goal:** Define minimal persistence contract.
-
-**Requirements:** ES-01, ES-02
-
-**Success Criteria:**
-- `append()` signature defined
-- `load()` signature defined with tenant scoping
-- Interface has no extra methods beyond test requirements
-
----
-
-## Phase 6: PostgreSQL EventStore Implementation
-
-**Goal:** Make tests pass. Kernel becomes real.
-
-**Requirements:** PG-01 through PG-05
-
-**Success Criteria:**
-- All 7 integration tests pass
-- Unique (streamId, version) constraint enforced
-- Optimistic concurrency rejects stale writes
-- Tenant scoping prevents cross-tenant access
-- Event ordering is guaranteed
+**Plans:**
+- [ ] 06.5-01-PLAN.md — Offline Event Queue Implementation
 
 ---
 
-## Phase 7: Tenant Isolation Enforcement
+## Milestone 3: Operational Maturity
+*Ensuring scalability, evolvability, and distribution.*
 
-**Goal:** Make cross-tenant access impossible through normal repository usage.
+### Phase 7: Event Evolution & Performance
+- **Goal:** Ensure system scales and evolves without data loss.
+- **Key Tasks:**
+    - Implement `IEventUpgrader` pattern for schema evolution (Upcasting).
+    - Implement `ISnapshotStore` to cap rehydration time.
+    - Create `SnapshotManager` for automated snapshotting.
+- **Success Criteria:** Old event versions load into new aggregates; load time remains constant.
 
-**Requirements:** TEN-01 through TEN-04
-
-**Success Criteria:**
-- `TenantIsolationViolationException` exists
-- Repository load requires tenantId
-- Event append includes tenant metadata
-- TEST-05 passes (cross-tenant rejection)
-
----
-
-## Phase 8: Spine Verification
-
-**Goal:** Prove kernel is runnable end-to-end.
-
-**Requirements:** All requirements
-
-**Success Criteria:**
-- `vendor/bin/phpunit tests/Integration/EventStore` passes
-- No skipped tests
-- Test coverage shows AggregateRoot, EventStore, and TenantIsolation exercised
-- Manual verification: create aggregate, persist, reload, verify state
+### Phase 8: Distribution & Orchestration
+- **Goal:** Connect the kernel to the outside world and coordinate complex flows.
+- **Key Tasks:**
+    - Implement **Outbox Pattern** for guaranteed external delivery.
+    - Create `Saga` / `ProcessManager` base classes.
+    - Implement structured `AuditLog` service.
+- **Success Criteria:** Events reliably pushed to external brokers; multi-step Sagas can be tracked.
 
 ---
-
-## Milestone Completion
-
-After Phase 8, the kernel graduates from "semantic substrate" to "runtime infrastructure."
-
-Next milestone would be:
-- Temporal/Financial VOs (as needed)
-- Repository templates
-- Snapshot strategy
-- Outbox pattern
-- Projection infrastructure
-
----
-*Roadmap generated 2026-04-04*
+*Roadmap updated 2026-04-06*
