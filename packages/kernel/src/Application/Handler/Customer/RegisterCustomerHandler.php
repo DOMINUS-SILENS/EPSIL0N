@@ -11,6 +11,7 @@ use Spiral\Kernel\Domain\Shared\Result\Result;
 use Spiral\Kernel\Domain\Shared\Error\ErrorDetail;
 use Spiral\Kernel\Domain\Shared\Error\ErrorCode;
 use Spiral\Kernel\Domain\Customer\Customer;
+use Spiral\Kernel\Domain\Customer\CustomerErrorCodes;
 use Spiral\Kernel\Domain\Customer\IEmailUniquenessChecker;
 use Spiral\Kernel\Domain\Tenancy\EmailAddress;
 use Spiral\Kernel\Domain\Identity\CorrelationId;
@@ -70,7 +71,7 @@ final class RegisterCustomerHandler implements ICommandHandler
         $email = EmailAddress::fromString($command->email);
         if (!$this->uniquenessChecker->isUnique($tenantId, $email)) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.EMAIL_TAKEN'),
+                ErrorCode::fromString(CustomerErrorCodes::EMAIL_TAKEN),
                 'The email address is already registered for this tenant'
             ));
         }

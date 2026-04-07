@@ -55,7 +55,7 @@ class Customer extends AggregateRoot
     ): Result {
         if ($this->getStreamVersion() !== -1 && $this->getVersion() > 0) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.ALREADY_EXISTS'),
+                ErrorCode::fromString(CustomerErrorCodes::ALREADY_EXISTS),
                 'Customer already registered'
             ));
         }
@@ -117,21 +117,21 @@ class Customer extends AggregateRoot
         // Global Rule: If inactive, must fail.
         if (!$this->active) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.INACTIVE'),
+                ErrorCode::fromString(CustomerErrorCodes::INACTIVE),
                 'Customer is inactive and cannot be renamed'
             ));
         }
 
         if (!$this->verified) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.NOT_VERIFIED'),
+                ErrorCode::fromString(CustomerErrorCodes::NOT_VERIFIED),
                 'Customer email must be verified before renaming'
             ));
         }
 
         if (!preg_match('/^[a-zA-Z0-9\s]{2,100}$/', $newName)) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('VALIDATION.NAME_INVALID'),
+                ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
                 'Name must be 2-100 characters and contain no special characters'
             ));
         }
@@ -244,7 +244,7 @@ class Customer extends AggregateRoot
         // State-based check: customer already exists if name is set
         if ($this->name !== null) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.ALREADY_EXISTS'),
+                ErrorCode::fromString(CustomerErrorCodes::ALREADY_EXISTS),
                 'Customer already created'
             ));
         }
@@ -276,7 +276,7 @@ class Customer extends AggregateRoot
         // Check if customer exists (state-based check for functional design)
         if ($this->name === null) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('DOMAIN.CUSTOMER.NOT_FOUND'),
+                ErrorCode::fromString(CustomerErrorCodes::NOT_FOUND),
                 'Customer does not exist'
             ));
         }
@@ -284,7 +284,7 @@ class Customer extends AggregateRoot
         // Domain commands use simplified rules - no verification requirement
         if (!preg_match('/^[a-zA-Z0-9\s]{2,100}$/', $command->newName)) {
             return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString('VALIDATION.NAME_INVALID'),
+                ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
                 'Name must be 2-100 characters and contain no special characters'
             ));
         }
