@@ -14,6 +14,7 @@ use Spiral\Kernel\Domain\Customer\Event\CustomerEmailVerified;
 use Spiral\Kernel\Domain\Customer\Event\CustomerRenamed as EventCustomerRenamed;
 use Spiral\Kernel\Domain\Customer\Event\CustomerDeactivated;
 use Spiral\Kernel\Domain\Customer\Event\CustomerReactivated;
+use Spiral\Kernel\Domain\Customer\CustomerErrorCodes;
 use Spiral\Kernel\Domain\Identity\EventId;
 use Spiral\Kernel\Domain\Identity\CorrelationId;
 use Spiral\Kernel\Domain\Identity\CausationId;
@@ -222,71 +223,56 @@ class Customer extends AggregateRoot
 
         // Application commands (full event sourcing with tracing)
         if ($command instanceof \Spiral\Kernel\Application\Command\Customer\RegisterCustomer) {
-            /** @var non-empty-string $correlationId */
-            $correlationId = $command->correlationId;
-            /** @var non-empty-string $causationId */
-            $causationId = $command->causationId;
+            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
             return $this->register(
                 $command->aggregateId,
                 $command->name,
                 EmailAddress::fromString($command->email),
-                CorrelationId::fromString($correlationId),
-                CausationId::fromString($causationId),
+                $correlationId,
+                $causationId,
             );
         }
 
         if ($command instanceof \Spiral\Kernel\Application\Command\Customer\VerifyCustomerEmail) {
-            /** @var non-empty-string $correlationId */
-            $correlationId = $command->correlationId;
-            /** @var non-empty-string $causationId */
-            $causationId = $command->causationId;
+            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
             return $this->verifyEmail(
                 $command->aggregateId,
-                CorrelationId::fromString($correlationId),
-                CausationId::fromString($causationId),
+                $correlationId,
+                $causationId,
             );
         }
 
         if ($command instanceof \Spiral\Kernel\Application\Command\Customer\RenameCustomer) {
-            /** @var non-empty-string $correlationId */
-            $correlationId = $command->correlationId;
-            /** @var non-empty-string $causationId */
-            $causationId = $command->causationId;
+            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
             return $this->rename(
                 $command->aggregateId,
                 $command->newName,
-                CorrelationId::fromString($correlationId),
-                CausationId::fromString($causationId),
+                $correlationId,
+                $causationId,
             );
         }
 
         if ($command instanceof \Spiral\Kernel\Application\Command\Customer\DeactivateCustomer) {
-            /** @var non-empty-string $correlationId */
-            $correlationId = $command->correlationId;
-            /** @var non-empty-string $causationId */
-            $causationId = $command->causationId;
+            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
             return $this->deactivate(
                 $command->aggregateId,
                 $command->reason,
-                CorrelationId::fromString($correlationId),
-                CausationId::fromString($causationId),
+                $correlationId,
+                $causationId,
             );
         }
 
         if ($command instanceof \Spiral\Kernel\Application\Command\Customer\ReactivateCustomer) {
-            /** @var non-empty-string $correlationId */
-            $correlationId = $command->correlationId;
-            /** @var non-empty-string $causationId */
-            $causationId = $command->causationId;
+            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
             return $this->reactivate(
                 $this->getId(),
-                CorrelationId::fromString($correlationId),
-                CausationId::fromString($causationId),
+                $correlationId,
+                $causationId,
             );
         }
 
         return Result::failure(ErrorDetail::create(
-            ErrorCode::fromString('DOMAIN.CUSTOMER.UNKNOWN_COMMAND'),
+            ErrorCode::fromString(CustomerErrorCodes::UNKNOWN_COMMAND),
             'Unknown command type: ' . \get_class($command),
         ));
     }
@@ -416,6 +402,28 @@ class Customer extends AggregateRoot
     {
         $this->active = true;
         $this->deactivationReason = null;
+    }
+
+    /**
+     * Extract and validate tracing context from application command.
+     *
+     * Converts string correlation and causation IDs with type validation.
+     *
+     * @param string $correlationId The correlation ID string
+     * @param string $causationId The causation ID string
+     * @return array{0: CorrelationId, 1: CausationId}
+     */
+    private function extractTracingContext(string $correlationId, string $causationId): array
+    {
+        /** @var non-empty-string $correlationIdStr */
+        $correlationIdStr = $correlationId;
+        /** @var non-empty-string $causationIdStr */
+        $causationIdStr = $causationId;
+
+        return [
+            CorrelationId::fromString($correlationIdStr),
+            CausationId::fromString($causationIdStr),
+        ];
     }
 
     private function generateEventId(): EventId { return \Spiral\Kernel\Domain\Identity\EventId::generate(); }
