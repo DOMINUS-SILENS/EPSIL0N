@@ -203,9 +203,13 @@ class Customer extends AggregateRoot
     }
 
     /**
-     * Command dispatcher for domain commands.
+     * Handle domain-level commands (for testing and internal domain use only).
      *
-     * Handles both Domain-level commands (simple) and Application-level commands (with tracing).
+     * Domain commands are simple, side-effect-free operations that return events
+     * without applying them. This supports functional testing and internal composition.
+     *
+     * Application-level commands (with tracing and validation) are NOT handled here.
+     * The Application layer is responsible for orchestrating those operations.
      *
      * @param object $command
      * @return Result<array<object>|null>
@@ -219,56 +223,6 @@ class Customer extends AggregateRoot
 
         if ($command instanceof RenameCustomer) {
             return $this->handleRenameCustomer($command);
-        }
-
-        // Application commands (full event sourcing with tracing)
-        if ($command instanceof \Spiral\Kernel\Application\Command\Customer\RegisterCustomer) {
-            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
-            return $this->register(
-                $command->aggregateId,
-                $command->name,
-                EmailAddress::fromString($command->email),
-                $correlationId,
-                $causationId,
-            );
-        }
-
-        if ($command instanceof \Spiral\Kernel\Application\Command\Customer\VerifyCustomerEmail) {
-            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
-            return $this->verifyEmail(
-                $command->aggregateId,
-                $correlationId,
-                $causationId,
-            );
-        }
-
-        if ($command instanceof \Spiral\Kernel\Application\Command\Customer\RenameCustomer) {
-            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
-            return $this->rename(
-                $command->aggregateId,
-                $command->newName,
-                $correlationId,
-                $causationId,
-            );
-        }
-
-        if ($command instanceof \Spiral\Kernel\Application\Command\Customer\DeactivateCustomer) {
-            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
-            return $this->deactivate(
-                $command->aggregateId,
-                $command->reason,
-                $correlationId,
-                $causationId,
-            );
-        }
-
-        if ($command instanceof \Spiral\Kernel\Application\Command\Customer\ReactivateCustomer) {
-            [$correlationId, $causationId] = $this->extractTracingContext($command->correlationId, $command->causationId);
-            return $this->reactivate(
-                $this->getId(),
-                $correlationId,
-                $causationId,
-            );
         }
 
         return Result::failure(ErrorDetail::create(
@@ -402,28 +356,6 @@ class Customer extends AggregateRoot
     {
         $this->active = true;
         $this->deactivationReason = null;
-    }
-
-    /**
-     * Extract and validate tracing context from application command.
-     *
-     * Converts string correlation and causation IDs with type validation.
-     *
-     * @param string $correlationId The correlation ID string
-     * @param string $causationId The causation ID string
-     * @return array{0: CorrelationId, 1: CausationId}
-     */
-    private function extractTracingContext(string $correlationId, string $causationId): array
-    {
-        /** @var non-empty-string $correlationIdStr */
-        $correlationIdStr = $correlationId;
-        /** @var non-empty-string $causationIdStr */
-        $causationIdStr = $causationId;
-
-        return [
-            CorrelationId::fromString($correlationIdStr),
-            CausationId::fromString($causationIdStr),
-        ];
     }
 
     private function generateEventId(): EventId { return \Spiral\Kernel\Domain\Identity\EventId::generate(); }
