@@ -89,8 +89,10 @@ final class StoredEvent
         $metadataJson = $row['metadata'];
 
         $payload = \json_decode($payloadJson, true, 512, JSON_THROW_ON_ERROR);
-        /** @var array<string, mixed> $metadataArray */
-        $metadataArray = \json_decode($metadataJson, true, 512, JSON_THROW_ON_ERROR);
+        /** @var array<string, mixed> $metadataArrayMixed */
+        $metadataArrayMixed = \json_decode($metadataJson, true, 512, JSON_THROW_ON_ERROR);
+        /** @var array<string, string> $metadataArray */
+        $metadataArray = $metadataArrayMixed;
 
         /** @var non-empty-string $eventIdStr */
         $eventIdStr = $row['event_id'];
