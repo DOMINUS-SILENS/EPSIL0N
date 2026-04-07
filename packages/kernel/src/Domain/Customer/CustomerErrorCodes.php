@@ -49,5 +49,11 @@ final class CustomerErrorCodes
      */
     public const VALIDATION_NAME_INVALID = 'VALIDATION.NAME_INVALID';
 
+    /**
+     * Regex pattern for customer name validation.
+     * Allows: Alphanumeric characters and spaces only, 2-100 characters.
+     */
+    public const NAME_PATTERN = '/^[a-zA-Z0-9\s]{2,100}$/';
+
     private function __construct() {}
 }

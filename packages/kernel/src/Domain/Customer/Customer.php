@@ -129,7 +129,7 @@ class Customer extends AggregateRoot
             ));
         }
 
-        if (!preg_match('/^[a-zA-Z0-9\s]{2,100}$/', $newName)) {
+        if (!preg_match(CustomerErrorCodes::NAME_PATTERN, $newName)) {
             return Result::failure(ErrorDetail::create(
                 ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
                 'Name must be 2-100 characters and contain no special characters'
@@ -282,7 +282,7 @@ class Customer extends AggregateRoot
         }
 
         // Domain commands use simplified rules - no verification requirement
-        if (!preg_match('/^[a-zA-Z0-9\s]{2,100}$/', $command->newName)) {
+        if (!preg_match(CustomerErrorCodes::NAME_PATTERN, $command->newName)) {
             return Result::failure(ErrorDetail::create(
                 ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
                 'Name must be 2-100 characters and contain no special characters'
