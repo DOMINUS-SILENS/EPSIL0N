@@ -39,6 +39,20 @@ final class TestAggregateCreated extends DomainEventContract
     public function toArray(): array {
         return ['aggregateId' => $this->aggregateId, 'name' => $this->name];
     }
+
+    public static function forTest(string $aggregateId, string $name, DateTimeImmutable $createdAt, string $createdBy): self {
+        return new self(
+            EventId::fromString('10000000-0000-0000-0000-000000000001'),
+            TenantId::fromString('20000000-0000-0000-0000-000000000001'),
+            CorrelationId::fromString('30000000-0000-0000-0000-000000000001'),
+            CausationId::fromString('40000000-0000-0000-0000-000000000001'),
+            new DateTimeImmutable('2026-01-01T00:00:00Z'),
+            $aggregateId,
+            $name,
+            $createdAt,
+            $createdBy
+        );
+    }
 }
 
 /**
@@ -67,6 +81,20 @@ final class TestAggregateNameChanged extends DomainEventContract
     public function toArray(): array {
         return ['aggregateId' => $this->aggregateId, 'newName' => $this->newName];
     }
+
+    public static function forTest(string $aggregateId, string $newName, DateTimeImmutable $changedAt, string $changedBy): self {
+        return new self(
+            EventId::fromString('10000000-0000-0000-0000-000000000002'),
+            TenantId::fromString('20000000-0000-0000-0000-000000000001'),
+            CorrelationId::fromString('30000000-0000-0000-0000-000000000001'),
+            CausationId::fromString('40000000-0000-0000-0000-000000000001'),
+            new DateTimeImmutable('2026-01-01T00:00:00Z'),
+            $aggregateId,
+            $newName,
+            $changedAt,
+            $changedBy
+        );
+    }
 }
 
 /**
@@ -93,6 +121,19 @@ final class TestAggregateActivated extends DomainEventContract
     public function getSchemaVersion(): string { return '1.0'; }
     public function toArray(): array {
         return ['aggregateId' => $this->aggregateId];
+    }
+
+    public static function forTest(string $aggregateId, DateTimeImmutable $activatedAt, string $activatedBy): self {
+        return new self(
+            EventId::fromString('10000000-0000-0000-0000-000000000003'),
+            TenantId::fromString('20000000-0000-0000-0000-000000000001'),
+            CorrelationId::fromString('30000000-0000-0000-0000-000000000001'),
+            CausationId::fromString('40000000-0000-0000-0000-000000000001'),
+            new DateTimeImmutable('2026-01-01T00:00:00Z'),
+            $aggregateId,
+            $activatedAt,
+            $activatedBy
+        );
     }
 }
 
@@ -121,6 +162,20 @@ final class TestAggregateDeactivated extends DomainEventContract
     public function getSchemaVersion(): string { return '1.0'; }
     public function toArray(): array {
         return ['aggregateId' => $this->aggregateId, 'reason' => $this->reason];
+    }
+
+    public static function forTest(string $aggregateId, string $reason, DateTimeImmutable $deactivatedAt, string $deactivatedBy): self {
+        return new self(
+            EventId::fromString('10000000-0000-0000-0000-000000000004'),
+            TenantId::fromString('20000000-0000-0000-0000-000000000001'),
+            CorrelationId::fromString('30000000-0000-0000-0000-000000000001'),
+            CausationId::fromString('40000000-0000-0000-0000-000000000001'),
+            new DateTimeImmutable('2026-01-01T00:00:00Z'),
+            $aggregateId,
+            $reason,
+            $deactivatedAt,
+            $deactivatedBy
+        );
     }
 }
 
