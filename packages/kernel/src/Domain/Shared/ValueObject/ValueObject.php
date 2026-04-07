@@ -30,9 +30,8 @@ abstract class ValueObject
      *
      * @param self $other
      */
-    public function equals(self $other): bool
+    public function equals(ValueObject $other): bool
     {
-        // Value objects of different types are never equal
         if (get_class($this) !== get_class($other)) {
             return false;
         }
@@ -48,7 +47,7 @@ abstract class ValueObject
      *
      * @param self $other Same type as $this
      */
-    abstract protected function valueEquals(self $other): bool;
+    abstract protected function valueEquals(ValueObject $other): bool;
 
     /**
      * Get a string representation of this value object.

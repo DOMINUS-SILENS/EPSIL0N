@@ -22,7 +22,7 @@ use Spiral\Kernel\Support\Exception\BusinessRuleViolationException;
  *
  * @package Spiral\Kernel\Tests\Unit\Domain\Aggregate
  */
-final class AggregateStateTest extends KernelTestCase
+final class PlaceholderAggregateStateTest extends KernelTestCase
 {
     public function testAggregateCreation(): void
     {
@@ -66,7 +66,7 @@ final class AggregateStateTest extends KernelTestCase
     }
 }
 
-final class AggregateInvariantTest extends KernelTestCase
+final class PlaceholderAggregateInvariantTest extends KernelTestCase
 {
     public function testBusinessRuleEnforcement(): void
     {
@@ -113,7 +113,7 @@ final class AggregateInvariantTest extends KernelTestCase
     }
 }
 
-final class AggregateEventEmissionTest extends KernelTestCase
+final class PlaceholderAggregateEventEmissionTest extends KernelTestCase
 {
     public function testEventEmittedOnStateChange(): void
     {
@@ -172,7 +172,7 @@ final class AggregateEventEmissionTest extends KernelTestCase
     }
 }
 
-final class AggregateVersionTest extends KernelTestCase
+final class PlaceholderAggregateVersionTest extends KernelTestCase
 {
     public function testVersionStartsAtZero(): void
     {
@@ -209,7 +209,7 @@ final class AggregateVersionTest extends KernelTestCase
     }
 }
 
-final class AggregateTenantIsolationTest extends KernelTestCase
+final class PlaceholderAggregateTenantIsolationTest extends KernelTestCase
 {
     public function testTenantIdIsImmutable(): void
     {

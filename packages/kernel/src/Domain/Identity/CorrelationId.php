@@ -47,7 +47,7 @@ final class CorrelationId extends ValueObject
      */
     public static function fromString(string $uuidString): self
     {
-        if ($uuidString === '') {
+        if (trim($uuidString) === '') {
             throw new \InvalidArgumentException('CorrelationId cannot be empty');
         }
 

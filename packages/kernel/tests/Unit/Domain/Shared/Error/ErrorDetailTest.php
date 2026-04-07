@@ -17,7 +17,7 @@ use Spiral\Kernel\Tests\KernelTestCase;
  *
  * @package Spiral\Kernel\Tests\Unit\Domain\Shared\Error
  */
-final class ErrorDetailCreationTest extends KernelTestCase
+final class ErrorDetailTest extends KernelTestCase
 {
     // ========== Basic Creation Tests ==========
 

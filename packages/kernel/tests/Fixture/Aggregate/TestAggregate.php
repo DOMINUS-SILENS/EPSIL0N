@@ -4,63 +4,123 @@ declare(strict_types=1);
 
 namespace Spiral\Kernel\Tests\Fixture\Aggregate;
 
+use Spiral\Kernel\Domain\Shared\Event\DomainEventContract;
 use Spiral\Kernel\Domain\Identity\TenantId;
 use Spiral\Kernel\Domain\Identity\ActorId;
+use Spiral\Kernel\Domain\Identity\EventId;
+use Spiral\Kernel\Domain\Identity\CorrelationId;
+use Spiral\Kernel\Domain\Identity\CausationId;
 use Spiral\Kernel\Support\Exception\BusinessRuleViolationException;
+use DateTimeImmutable;
 
 /**
- * Test event for aggregate testing.
+ * Test event for aggregate creation.
  */
-final class TestAggregateCreated
+final class TestAggregateCreated extends DomainEventContract
 {
     public function __construct(
+        private readonly EventId $eventId,
+        private readonly TenantId $tenantId,
+        private readonly CorrelationId $correlationId,
+        private readonly CausationId $causationId,
+        private readonly DateTimeImmutable $occurredAt,
         public readonly string $aggregateId,
-        public readonly string $tenantId,
         public readonly string $name,
-        public readonly \DateTimeImmutable $createdAt,
+        public readonly DateTimeImmutable $createdAt,
         public readonly string $createdBy
-    ) {
+    ) {}
+
+    public function getEventId(): EventId { return $this->eventId; }
+    public function getTenantId(): TenantId { return $this->tenantId; }
+    public function getCorrelationId(): CorrelationId { return $this->correlationId; }
+    public function getCausationId(): CausationId { return $this->causationId; }
+    public function getOccurredAt(): DateTimeImmutable { return $this->occurredAt; }
+    public function getSchemaVersion(): string { return '1.0'; }
+    public function toArray(): array {
+        return ['aggregateId' => $this->aggregateId, 'name' => $this->name];
     }
 }
 
 /**
- * Test event for aggregate testing.
+ * Test event for name changes.
  */
-final class TestAggregateNameChanged
+final class TestAggregateNameChanged extends DomainEventContract
 {
     public function __construct(
+        private readonly EventId $eventId,
+        private readonly TenantId $tenantId,
+        private readonly CorrelationId $correlationId,
+        private readonly CausationId $causationId,
+        private readonly DateTimeImmutable $occurredAt,
         public readonly string $aggregateId,
         public readonly string $newName,
-        public readonly \DateTimeImmutable $changedAt,
+        public readonly DateTimeImmutable $changedAt,
         public readonly string $changedBy
-    ) {
+    ) {}
+
+    public function getEventId(): EventId { return $this->eventId; }
+    public function getTenantId(): TenantId { return $this->tenantId; }
+    public function getCorrelationId(): CorrelationId { return $this->correlationId; }
+    public function getCausationId(): CausationId { return $this->causationId; }
+    public function getOccurredAt(): DateTimeImmutable { return $this->occurredAt; }
+    public function getSchemaVersion(): string { return '1.0'; }
+    public function toArray(): array {
+        return ['aggregateId' => $this->aggregateId, 'newName' => $this->newName];
     }
 }
 
 /**
- * Test event for aggregate testing.
+ * Test event for activation.
  */
-final class TestAggregateActivated
+final class TestAggregateActivated extends DomainEventContract
 {
     public function __construct(
+        private readonly EventId $eventId,
+        private readonly TenantId $tenantId,
+        private readonly CorrelationId $correlationId,
+        private readonly CausationId $causationId,
+        private readonly DateTimeImmutable $occurredAt,
         public readonly string $aggregateId,
-        public readonly \DateTimeImmutable $activatedAt,
+        public readonly DateTimeImmutable $activatedAt,
         public readonly string $activatedBy
-    ) {
+    ) {}
+
+    public function getEventId(): EventId { return $this->eventId; }
+    public function getTenantId(): TenantId { return $this->tenantId; }
+    public function getCorrelationId(): CorrelationId { return $this->correlationId; }
+    public function getCausationId(): CausationId { return $this->causationId; }
+    public function getOccurredAt(): DateTimeImmutable { return $this->occurredAt; }
+    public function getSchemaVersion(): string { return '1.0'; }
+    public function toArray(): array {
+        return ['aggregateId' => $this->aggregateId];
     }
 }
 
 /**
- * Test event for aggregate testing.
+ * Test event for deactivation.
  */
-final class TestAggregateDeactivated
+final class TestAggregateDeactivated extends DomainEventContract
 {
     public function __construct(
+        private readonly EventId $eventId,
+        private readonly TenantId $tenantId,
+        private readonly CorrelationId $correlationId,
+        private readonly CausationId $causationId,
+        private readonly DateTimeImmutable $occurredAt,
         public readonly string $aggregateId,
         public readonly string $reason,
-        public readonly \DateTimeImmutable $deactivatedAt,
+        public readonly DateTimeImmutable $deactivatedAt,
         public readonly string $deactivatedBy
-    ) {
+    ) {}
+
+    public function getEventId(): EventId { return $this->eventId; }
+    public function getTenantId(): TenantId { return $this->tenantId; }
+    public function getCorrelationId(): CorrelationId { return $this->correlationId; }
+    public function getCausationId(): CausationId { return $this->causationId; }
+    public function getOccurredAt(): DateTimeImmutable { return $this->occurredAt; }
+    public function getSchemaVersion(): string { return '1.0'; }
+    public function toArray(): array {
+        return ['aggregateId' => $this->aggregateId, 'reason' => $this->reason];
     }
 }
 
@@ -116,10 +176,14 @@ final class TestAggregate
         $aggregate = new self($id, $tenantId);
 
         $event = new TestAggregateCreated(
+            EventId::generate(),
+            $tenantId,
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
             $id,
-            $tenantId->toString(),
             $name,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $createdBy->toString()
         );
 
@@ -149,9 +213,14 @@ final class TestAggregate
         }
 
         $event = new TestAggregateNameChanged(
+            EventId::generate(),
+            $this->tenantId,
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
             $this->id,
             $newName,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $changedBy->toString()
         );
 
@@ -169,8 +238,13 @@ final class TestAggregate
         }
 
         $event = new TestAggregateActivated(
+            EventId::generate(),
+            $this->tenantId,
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
             $this->id,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $activatedBy->toString()
         );
 
@@ -197,9 +271,14 @@ final class TestAggregate
         }
 
         $event = new TestAggregateDeactivated(
+            EventId::generate(),
+            $this->tenantId,
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
             $this->id,
             $reason,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $deactivatedBy->toString()
         );
 

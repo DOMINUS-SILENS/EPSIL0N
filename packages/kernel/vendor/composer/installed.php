@@ -3,7 +3,7 @@
         'name' => 'spiral-kernel/epsilone',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b83897d4ae783479ac27c403b79f58609b88c088',
+        'reference' => '986b97c55b44ca8e49618872469a50410e23f064',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -599,7 +599,7 @@
         'spiral-kernel/epsilone' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b83897d4ae783479ac27c403b79f58609b88c088',
+            'reference' => '986b97c55b44ca8e49618872469a50410e23f064',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

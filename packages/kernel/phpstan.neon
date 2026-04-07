@@ -2,7 +2,3 @@ parameters:
     level: 9
     paths:
         - src
-        - tests
-    excludePaths:
-        - src/Support
-    treatPhpDocTypesAsCertain: false

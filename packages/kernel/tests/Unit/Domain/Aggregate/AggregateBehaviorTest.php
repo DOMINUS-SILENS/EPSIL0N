@@ -18,7 +18,7 @@ use Spiral\Kernel\Support\Exception\BusinessRuleViolationException;
  * Comprehensive tests for Aggregate state management.
  * Tests cover: creation, state changes, and reconstitution.
  */
-final class AggregateCreationTest extends KernelTestCase
+final class AggregateBehaviorTest extends KernelTestCase
 {
     private function createTenantId(): TenantId
     {

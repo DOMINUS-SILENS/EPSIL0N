@@ -44,7 +44,7 @@ final class TenantId extends ValueObject
      */
     public static function fromString(string $uuidString): self
     {
-        if ($uuidString === '') {
+        if (trim($uuidString) === '') {
             throw new \InvalidArgumentException('TenantId cannot be empty');
         }
 

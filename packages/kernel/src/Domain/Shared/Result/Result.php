@@ -28,7 +28,7 @@ use Spiral\Kernel\Domain\Shared\Error\ErrorDetail;
  * - Infrastructure failures (throw exceptions)
  * - Validation of caller input (throw ValidationException)
  *
- * @template TData The type of the successful value
+ * @template-covariant TData The type of the successful value
  *
  * @package Spiral\Kernel\Domain\Shared\Result
  */
@@ -172,11 +172,17 @@ final class Success extends Result
         return false;
     }
 
+    /**
+     * @return TData
+     */
     public function unwrap(): mixed
     {
         return $this->value;
     }
 
+    /**
+     * @return TData
+     */
     public function unwrapOr(mixed $default): mixed
     {
         return $this->value;
@@ -190,11 +196,11 @@ final class Success extends Result
     /**
      * @template TNew
      * @param callable(TData): TNew $transformer
-     * @return Result<TNew>
+     * @return Success<TNew>
      */
-    public function map(callable $transformer): Result
+    public function map(callable $transformer): Success
     {
-        return Result::success($transformer($this->value));
+        return new Success($transformer($this->value));
     }
 
     /**
@@ -207,18 +213,30 @@ final class Success extends Result
         return $transformer($this->value);
     }
 
-    public function onSuccess(callable $sideEffect): Result
+    /**
+     * @return Success<TData>
+     */
+    public function onSuccess(callable $sideEffect): Success
     {
         $sideEffect($this->value);
         return $this;
     }
 
-    public function onFailure(callable $sideEffect): Result
+    /**
+     * @return Success<TData>
+     */
+    public function onFailure(callable $sideEffect): Success
     {
         // Do nothing on success
         return $this;
     }
 
+    /**
+     * @template TOut
+     * @param callable(TData): TOut $success Handler for success case
+     * @param callable(ErrorDetail): TOut $failure Handler for failure case
+     * @return TOut
+     */
     public function match(callable $success, callable $failure): mixed
     {
         return $success($this->value);

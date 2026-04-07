@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpExcludeByFolders">
+    <option name="folders">
+      <list>
+        <folder path="$PROJECT_DIR$/packages/kernel/vendor" />
+      </list>
+    </option>
+  </component>
+</project>

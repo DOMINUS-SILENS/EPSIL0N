@@ -59,7 +59,7 @@ final class TestIntegerValueObject extends ValueObject
  *
  * @package Spiral\Kernel\Tests\Unit\Domain\Shared\ValueObject
  */
-final class ValueObjectEqualityTest extends KernelTestCase
+final class ValueObjectTest extends KernelTestCase
 {
     // ========== Same Type Equality Tests ==========
 
@@ -292,7 +292,10 @@ final class ValueObjectImmutabilityTest extends KernelTestCase
         $params = $reflection->getParameters();
 
         $this->assertCount(1, $params);
-        $this->assertSame(ValueObject::class, $params[0]->getType()->getName());
+        $type = $params[0]->getType();
+        $this->assertNotNull($type);
+        $this->assertInstanceOf(\ReflectionNamedType::class, $type);
+        $this->assertSame(ValueObject::class, $type->getName());
     }
 }
 

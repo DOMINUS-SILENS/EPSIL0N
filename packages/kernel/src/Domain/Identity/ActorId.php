@@ -46,7 +46,7 @@ final class ActorId extends ValueObject
      */
     public static function fromString(string $uuidString): self
     {
-        if ($uuidString === '') {
+        if (trim($uuidString) === '') {
             throw new \InvalidArgumentException('ActorId cannot be empty');
         }
 

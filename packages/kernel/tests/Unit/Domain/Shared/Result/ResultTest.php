@@ -17,7 +17,7 @@ use Spiral\Kernel\Tests\KernelTestCase;
  *
  * @package Spiral\Kernel\Tests\Unit\Domain\Shared\Result
  */
-final class ResultCreationTest extends KernelTestCase
+final class ResultTest extends KernelTestCase
 {
     // ========== Success Creation Tests ==========
 
@@ -240,7 +240,7 @@ final class ResultSuccessOperationsTest extends KernelTestCase
     {
         $result = Result::success('value');
 
-        $returned = $result->onSuccess(fn (): void => null);
+        $returned = $result->onSuccess(function (): void {});
 
         $this->assertSame($result, $returned);
     }
@@ -250,7 +250,9 @@ final class ResultSuccessOperationsTest extends KernelTestCase
         $result = Result::success('value');
         $sideEffectCalled = false;
 
-        $result->onFailure(fn () => $sideEffectCalled = true);
+        $result->onFailure(function (ErrorDetail $_e) use (&$sideEffectCalled): void {
+            $sideEffectCalled = true;
+        });
 
         $this->assertFalse($sideEffectCalled);
     }
@@ -286,6 +288,8 @@ final class ResultFailureOperationsTest extends KernelTestCase
 {
     private function createError(string $code, string $message): ErrorDetail
     {
+        /** @var non-empty-string $code */
+        /** @var non-empty-string $message */
         return ErrorDetail::create(ErrorCode::kernel($code), $message);
     }
 
@@ -415,7 +419,7 @@ final class ResultFailureOperationsTest extends KernelTestCase
         $error = $this->createError('ERROR', 'Error');
         $result = Result::failure($error);
 
-        $returned = $result->onFailure(fn (): void => null);
+        $returned = $result->onFailure(function (): void {});
 
         $this->assertSame($result, $returned);
     }
@@ -426,7 +430,9 @@ final class ResultFailureOperationsTest extends KernelTestCase
         $result = Result::failure($error);
         $sideEffectCalled = false;
 
-        $result->onSuccess(fn () => $sideEffectCalled = true);
+        $result->onSuccess(function (mixed $_v) use (&$sideEffectCalled): void {
+            $sideEffectCalled = true;
+        });
 
         $this->assertFalse($sideEffectCalled);
     }
@@ -526,7 +532,9 @@ final class ResultEdgeCasesTest extends KernelTestCase
             ->flatMap(fn (int $x): Result => Result::failure(
                 ErrorDetail::create(ErrorCode::kernel('ERROR'), 'Error')
             ))
-            ->flatMap(fn (int $x): Result => Result::success($x * 2)); // Should not execute
+            ->flatMap(function (mixed $x): Result {
+                return Result::success($x * 2); // Should not execute
+            });
 
         $this->assertTrue($result->isFailure());
     }
@@ -563,6 +571,7 @@ final class ResultEdgeCasesTest extends KernelTestCase
     public function testSuccessWithResource(): void
     {
         $resource = fopen('php://memory', 'r+');
+        $this->assertNotFalse($resource, 'Failed to open test resource');
         $result = Result::success($resource);
 
         $this->assertIsResource($result->unwrap());

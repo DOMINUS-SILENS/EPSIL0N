@@ -49,7 +49,7 @@ final class CausationId extends ValueObject
      */
     public static function fromString(string $uuidString): self
     {
-        if ($uuidString === '') {
+        if (trim($uuidString) === '') {
             throw new \InvalidArgumentException('CausationId cannot be empty');
         }
 

@@ -1,0 +1,5 @@
+{
+    "require": {
+        "nyholm/psr7": "^1.8"
+    }
+}

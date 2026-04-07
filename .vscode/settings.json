@@ -1,0 +1,11 @@
+{
+  "php.validate.exclude": [
+    "**/vendor/**"
+  ],
+  "intelephense.files.exclude": [
+    "**/vendor/**"
+  ],
+  "php.problems.exclude": {
+    "**/vendor/**": true
+  }
+}

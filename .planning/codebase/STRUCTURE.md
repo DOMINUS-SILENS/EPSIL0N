@@ -1,6 +1,6 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-04-04
+**Analysis Date:** 2026-04-06
 
 ## Directory Layout
 
@@ -119,32 +119,23 @@ packages/kernel/
 │   │
 │   ├── Integration/               # Integration tests
 │   │   ├── EventStore/            # Event store integration
-│   │   ├── Outbox/                # Outbox integration
-│   │   ├── Replay/                # Replay integration
-│   │   ├── Concurrency/           # Concurrency tests
-│   │   ├── Tenancy/               # Multi-tenancy tests
-│   │   ├── Idempotency/           # Idempotency tests
-│   │   ├── Repository/            # Repository tests
-│   │   └── Spiral/                # Spiral integration tests
 │   │
-│   ├── Fixture/                   # Test fixtures
-│   │   ├── Aggregate/             # Test aggregates
-│   │   ├── Event/                 # Test events
-│   │   ├── Projection/            # Test projections
-│   │   └── Persistence/           # Test persistence
+│   ├── Fixture/                   # Test fixtures (5 items)
+│   │   ├── Aggregate/             # TestAggregate.php
+│   │   ├── Event/                 # TestEvent.php, TestDomainEvents.php
+│   │   ├── Projection/            # TestProjection.php
+│   │   └── Persistence/           # TestRepository.php
 │   │
-│   ├── Smoke/                     # Smoke tests
 │   ├── EndToEnd/                  # End-to-end tests
-│   └── KernelTestCase.php         # Base test case
+│   │   └── KernelOrchestrationTest.php
+│   │
+│   └── Smoke/                     # Smoke tests
+│       └── SystemStabilityTest.php
 │
 ├── resources/
 │   ├── config/                    # Configuration files
-│   └── sql/                        # SQL migrations
-│       ├── event_store/           # Event store schema
-│       ├── outbox/                # Outbox schema
-│       ├── inbox/                 # Inbox schema
-│       ├── idempotency/           # Idempotency schema
-│       └── diagnostics/           # Diagnostics schema
+│   └── sql/                       # Database migrations
+│       └── event_store/           # Event store schema
 │
 ├── composer.json                  # PHP dependencies
 ├── phpunit.xml                    # PHPUnit configuration
