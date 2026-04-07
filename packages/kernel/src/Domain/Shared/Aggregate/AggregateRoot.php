@@ -84,8 +84,21 @@ abstract class AggregateRoot
     /**
      * Apply an event to the aggregate state.
      *
+     * This method reconstructs the aggregate's state by replaying events in
+     * sequence. Called during two scenarios:
+     *
+     * 1. When events are raised (raise method): Apply immediately after
+     *    recording so aggregate state reflects the mutation
+     *
+     * 2. When replaying from event store (reconstituteFromEvents): Apply in
+     *    sequence to rebuild aggregate from persisted history
+     *
+     * Event application MUST be:
+     * - Deterministic: Same event always produces same state change
+     * - Idempotent: Re-applying same event produces equivalent result
+     * - Isolated: Changes only aggregate state, no side effects
+     *
      * Subclasses must implement this to handle their specific event types.
-     * The method is called internally when events are raised or replayed.
      */
     abstract protected function apply(DomainEvent $event): void;
 

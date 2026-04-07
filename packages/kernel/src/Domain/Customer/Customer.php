@@ -205,11 +205,22 @@ class Customer extends AggregateRoot
     /**
      * Handle domain-level commands (for testing and internal domain use only).
      *
-     * Domain commands are simple, side-effect-free operations that return events
-     * without applying them. This supports functional testing and internal composition.
+     * Domain commands support two use cases:
+     * 1. Unit testing: Return events for caller to apply (functional style)
+     * 2. Internal composition: Build event sequences without side effects
      *
-     * Application-level commands (with tracing and validation) are NOT handled here.
-     * The Application layer is responsible for orchestrating those operations.
+     * Application-level commands (e.g., RegisterCustomer, RenameCustomer from
+     * the Application\Command namespace) are NOT handled here. The Application
+     * layer is responsible for orchestrating those operations with full context:
+     * - Authorization checks
+     * - Idempotency verification
+     * - Domain service validation (email uniqueness)
+     * - Event persistence
+     * - Audit trail recording
+     *
+     * This separation prevents circular dependencies:
+     * Domain should NOT depend on Application.
+     * Application depends on Domain ✅
      *
      * @param object $command
      * @return Result<array<object>|null>
