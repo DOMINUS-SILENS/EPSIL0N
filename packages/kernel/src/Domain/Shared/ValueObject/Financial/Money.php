@@ -243,6 +243,9 @@ final class Money extends ValueObject
     /**
      * Allocate this amount proportionally.
      *
+     * Uses floor allocation for all but the last item, ensuring the sum of
+     * allocated amounts exactly equals the original amount (no rounding loss).
+     *
      * @param array<int, float> $ratios Array of ratios (will be normalized)
      * @return array<self>
      */
@@ -259,17 +262,26 @@ final class Money extends ValueObject
 
         $result = [];
         $remaining = $this->minorUnits;
-
-        $ratios = array_map(fn(float $r) => $r / $total, $ratios);
         $count = count($ratios);
+
+        // Normalize ratios
+        $normalizedRatios = array_map(fn(float $r) => $r / $total, $ratios);
 
         for ($i = 0; $i < $count; $i++) {
             $isLast = $i === $count - 1;
-            $proportion = $ratios[$i];
+            $proportion = $normalizedRatios[$i];
 
-            $allocated = $isLast
-                ? $remaining
-                : (int) round($this->minorUnits * $proportion);
+            if ($isLast) {
+                // Last item receives remaining balance (guarantees sum equals original)
+                $allocated = $remaining;
+            } else {
+                // Use banker's rounding (round to nearest) instead of floor
+                // This gives fairer distribution: round(33.333) = 33, round(33.667) = 34
+                $allocated = (int) round($this->minorUnits * $proportion);
+
+                // Don't over-allocate beyond remaining balance
+                $allocated = \min($allocated, $remaining);
+            }
 
             $result[] = new self($this->currency, $allocated);
             $remaining -= $allocated;
