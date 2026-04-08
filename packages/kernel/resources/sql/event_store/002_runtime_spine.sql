@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS event_streams (
 -- 2. Domain Events: The immutable log of all state changes.
 CREATE TABLE IF NOT EXISTS domain_events (
     id BIGSERIAL PRIMARY KEY,
+    global_position BIGSERIAL NOT NULL UNIQUE,
     tenant_id UUID NOT NULL,
     stream_id VARCHAR(255) NOT NULL,
     stream_version INTEGER NOT NULL,
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS domain_events (
 CREATE INDEX idx_domain_events_tenant_stream ON domain_events(tenant_id, stream_id);
 CREATE INDEX idx_domain_events_correlation ON domain_events(correlation_id);
 CREATE INDEX idx_domain_events_occurred_at ON domain_events(occurred_at);
+CREATE INDEX idx_domain_events_global_position ON domain_events(global_position);
 
 -- Cleanup legacy table if it exists (optional, but recommended for a clean transition)
 -- DROP TABLE IF EXISTS event_store;
