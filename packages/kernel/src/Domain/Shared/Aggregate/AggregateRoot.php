@@ -148,25 +148,34 @@ abstract class AggregateRoot
      * Called by repositories to rebuild aggregate state from stored events.
      *
      * @param list<DomainEvent> $events
-     * @param int $streamVersion The version of the stream when these events were loaded
+     * @param int $streamVersion The version of the stream after these events are applied
      */
     public function reconstituteFromEvents(array $events, int $streamVersion = 0): void
     {
         $this->streamVersion = $streamVersion;
-        $this->version = $streamVersion;
 
         foreach ($events as $event) {
             $this->apply($event);
-            $this->version++;
         }
+
+        // Version reflects the stream version (number of events applied up to this point)
+        $this->version = $streamVersion;
     }
 
     /**
-     * Mark the aggregate as newly created (no prior stream version).
+     * Mark the aggregate as newly created (not yet persisted).
+     *
+     * Convention:
+     * - streamVersion = 0 means "new aggregate, no events persisted yet"
+     * - streamVersion > 0 means "aggregate has N events persisted"
+     *
+     * This is called after construction before any events are raised.
+     * After persistence, markCommitted() updates streamVersion to the
+     * actual version number.
      */
     public function markAsNew(): void
     {
-        $this->streamVersion = -1;
+        $this->streamVersion = 0;
     }
 
     /**
