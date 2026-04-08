@@ -19,6 +19,7 @@ use Spiral\Kernel\Support\Exception\ConcurrencyConflictException;
  * - Optimistic concurrency control
  * - Tenant isolation
  * - Event ordering by version
+ * - Global position tracking for projections
  *
  * @package Spiral\Kernel\Tests\Fixture\Persistence
  */
@@ -37,6 +38,20 @@ final class InMemoryEventStore implements IEventStore
      * @var array<string, array<string, int>>
      */
     private array $versions = [];
+
+    /**
+     * Global position counter for projection polling.
+     *
+     * @var int
+     */
+    private int $globalPositionCounter = 0;
+
+    /**
+     * Global event sequence ordered by global_position.
+     *
+     * @var array<int, StoredEvent>
+     */
+    private array $globalSequence = [];
 
     public function append(
         TenantId $tenantId,
@@ -66,16 +81,33 @@ final class InMemoryEventStore implements IEventStore
             $this->streams[$tenantKey][$streamId] = [];
         }
 
-        // Append events, incrementing version for each
+        // Append events, incrementing version for each and assigning global position
         $newVersion = $currentVersion;
         foreach ($events as $event) {
             $newVersion++;
+            $this->globalPositionCounter++;
+
             $storedEvent = StoredEvent::fromDomainEvent(
                 $event,
                 $streamId,
                 $newVersion
             );
+
+            // Recreate StoredEvent with global position
+            $storedEvent = new StoredEvent(
+                eventId: $storedEvent->eventId,
+                tenantId: $storedEvent->tenantId,
+                streamId: $storedEvent->streamId,
+                streamVersion: $storedEvent->streamVersion,
+                eventType: $storedEvent->eventType,
+                eventClassName: $storedEvent->eventClassName,
+                payload: $storedEvent->payload,
+                metadata: $storedEvent->metadata,
+                globalPosition: $this->globalPositionCounter,
+            );
+
             $this->streams[$tenantKey][$streamId][$newVersion] = $storedEvent;
+            $this->globalSequence[$this->globalPositionCounter] = $storedEvent;
         }
 
         // Update version tracking
@@ -158,6 +190,25 @@ final class InMemoryEventStore implements IEventStore
         return $this->versions[$tenantKey][$streamId];
     }
 
+    public function getEventsFromPosition(int $position, int $limit = 100): array
+    {
+        $result = [];
+        $count = 0;
+
+        // Iterate through global sequence in order
+        foreach ($this->globalSequence as $globalPos => $event) {
+            if ($globalPos > $position) {
+                $result[] = $event;
+                $count++;
+                if ($count >= $limit) {
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * Clear all stored events (testing utility).
      */
@@ -165,5 +216,7 @@ final class InMemoryEventStore implements IEventStore
     {
         $this->streams = [];
         $this->versions = [];
+        $this->globalPositionCounter = 0;
+        $this->globalSequence = [];
     }
 }

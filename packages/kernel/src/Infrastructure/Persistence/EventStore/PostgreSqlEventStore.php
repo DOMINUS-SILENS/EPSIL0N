@@ -164,6 +164,42 @@ final class PostgreSqlEventStore implements IEventStore
         }
     }
 
+    /**
+     * Poll events from a global position for projection engine.
+     *
+     * Returns events in order of global_position (monotonically increasing),
+     * making this suitable for projection polling across all streams and tenants.
+     *
+     * @param int $position Last known global position (0 to start from beginning)
+     * @param int $limit Maximum number of events to return
+     * @return list<StoredEvent> Events ordered by global_position ASC
+     */
+    public function getEventsFromPosition(int $position, int $limit = 100): array
+    {
+        $sql = \sprintf(
+            'SELECT global_position, tenant_id, stream_id, stream_version, event_id, event_type, correlation_id, causation_id, occurred_at, schema_version, payload, metadata FROM %s WHERE global_position > :position ORDER BY global_position ASC LIMIT :limit',
+            $this->quoteIdentifier(self::EVENTS_TABLE)
+        );
+
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([
+                'position' => $position,
+                'limit' => $limit,
+            ]);
+
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return \array_map(
+                fn(array $row) => StoredEvent::fromDatabaseRow($row),
+                $rows
+            );
+        } catch (\PDOException $e) {
+            $reason = $this->buildErrorReason($e, "polling events from global position $position");
+            throw EventStoreException::failedToLoad('global-position-poll', $reason, $e);
+        }
+    }
+
     private function validateExpectedVersion(
         ExpectedVersion $expectedVersion,
         int $currentVersion,

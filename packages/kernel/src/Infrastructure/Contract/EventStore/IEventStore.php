@@ -80,4 +80,18 @@ interface IEventStore
      * @return int Number of events in stream, or 0 if stream doesn't exist
      */
     public function getStreamVersion(TenantId $tenantId, string $streamId): int;
+
+    /**
+     * Poll events from a global position for projection engine.
+     *
+     * Returns events globally across all streams and tenants in order of
+     * global_position (monotonically increasing). Used by projection engine
+     * to poll for new events since last checkpoint.
+     *
+     * @param int $position Last known global position (0 to start from beginning)
+     * @param int $limit Maximum number of events to return
+     *
+     * @return list<StoredEvent> Events ordered by global_position ASC
+     */
+    public function getEventsFromPosition(int $position, int $limit = 100): array;
 }
