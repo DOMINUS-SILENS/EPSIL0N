@@ -49,8 +49,9 @@
 | 260408-jzs | Fix 7 critical kernel issues: AggregateRoot version tracking, Organization LSP violation, Customer decide() dual path, Money allocate() rounding, TenantSlug validation, EventStoreException, Customer apply() silent event ignore | 2026-04-08 | 7dfeb94 | [260408-jzs-fix-7-critical-kernel-issues-aggregatero](./quick/260408-jzs-fix-7-critical-kernel-issues-aggregatero/) |
 | 260408-m8h | Restore Customer::decide() as @internal test helper with clear separation from production event-sourced API | 2026-04-08 | e288002 | [260408-m8h-feat-restore-decide-test-re-add-customer](./quick/260408-m8h-feat-restore-decide-test-re-add-customer/) |
 | 260408-mer | Fix EventSourcedRepository silent failure handling: add exception context (tenant, aggregate ID, causation chains) to save() method, add unit tests for error propagation | 2026-04-08 | 113a5d9 | [260408-mer-fix-resolve-eventsourcedrepository-silen](./quick/260408-mer-fix-resolve-eventsourcedrepository-silen/) |
+| 260408-ms9 | Improve PostgreSqlEventStore error messages: add comprehensive context to load/append operations, preserve causation/correlation chains, map database error codes | 2026-04-08 | 1a01c53 | [260408-ms9-fix-improve-postgresqleventstore-error-m](./quick/260408-ms9-fix-improve-postgresqleventstore-error-m/) |
 
-**Last activity:** 2026-04-08 - Completed quick task 260408-mer: Fix EventSourcedRepository silent failure handling
+**Last activity:** 2026-04-08 - Completed quick task 260408-ms9: Improve PostgreSqlEventStore error handling
 
 ---
 *State initialized 2026-04-04*
