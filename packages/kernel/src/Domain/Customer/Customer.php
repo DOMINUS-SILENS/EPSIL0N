@@ -22,7 +22,7 @@ use Spiral\Kernel\Domain\Identity\TenantId;
 use Spiral\Kernel\Domain\Tenancy\EmailAddress;
 use DateTimeImmutable;
 
-class Customer extends AggregateRoot
+final class Customer extends AggregateRoot
 {
     private ?string $name = null;
     private ?string $email = null;
@@ -53,7 +53,8 @@ class Customer extends AggregateRoot
         CorrelationId $correlationId,
         CausationId $causationId
     ): Result {
-        if ($this->getStreamVersion() !== -1 && $this->getVersion() > 0) {
+        // State-based check: customer already exists if name is set
+        if ($this->name !== null) {
             return Result::failure(ErrorDetail::create(
                 ErrorCode::fromString(CustomerErrorCodes::ALREADY_EXISTS),
                 'Customer already registered'
@@ -202,142 +203,21 @@ class Customer extends AggregateRoot
         return Result::success(null);
     }
 
-    /**
-     * Handle domain-level commands (for testing and internal domain use only).
-     *
-     * Domain commands support two use cases:
-     * 1. Unit testing: Return events for caller to apply (functional style)
-     * 2. Internal composition: Build event sequences without side effects
-     *
-     * Application-level commands (e.g., RegisterCustomer, RenameCustomer from
-     * the Application\Command namespace) are NOT handled here. The Application
-     * layer is responsible for orchestrating those operations with full context:
-     * - Authorization checks
-     * - Idempotency verification
-     * - Domain service validation (email uniqueness)
-     * - Event persistence
-     * - Audit trail recording
-     *
-     * This separation prevents circular dependencies:
-     * Domain should NOT depend on Application.
-     * Application depends on Domain ✅
-     *
-     * @param object $command
-     * @return Result<array<object>|null>
-     */
-    public function decide(object $command): Result
-    {
-        // Domain commands (simple, for testing and internal use)
-        if ($command instanceof CreateCustomer) {
-            return $this->handleCreateCustomer($command);
-        }
-
-        if ($command instanceof RenameCustomer) {
-            return $this->handleRenameCustomer($command);
-        }
-
-        return Result::failure(ErrorDetail::create(
-            ErrorCode::fromString(CustomerErrorCodes::UNKNOWN_COMMAND),
-            'Unknown command type: ' . \get_class($command),
-        ));
-    }
-
-    /**
-     * Handle domain-level CreateCustomer command.
-     *
-     * Returns events without applying them (functional design for testing).
-     *
-     * @param CreateCustomer $command
-     * @return Result<array<object>>
-     */
-    private function handleCreateCustomer(CreateCustomer $command): Result
-    {
-        // State-based check: customer already exists if name is set
-        if ($this->name !== null) {
-            return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString(CustomerErrorCodes::ALREADY_EXISTS),
-                'Customer already created'
-            ));
-        }
-
-        $event = new CustomerCreated(
-            EventId::generate(),
-            $this->getTenantId(),
-            CorrelationId::generate(),
-            CausationId::generate(),
-            new \DateTimeImmutable(),
-            $command->aggregate_id,
-            $command->name
-        );
-        // Note: Do NOT call raise() here - events are returned for caller to apply
-        return Result::success([$event]);
-    }
-
-    /**
-     * Handle domain-level RenameCustomer command.
-     *
-     * Returns events without applying them (functional design for testing).
-     * Note: Domain commands use simplified business rules for testing.
-     *
-     * @param RenameCustomer $command
-     * @return Result<array<object>>
-     */
-    private function handleRenameCustomer(RenameCustomer $command): Result
-    {
-        // Check if customer exists (state-based check for functional design)
-        if ($this->name === null) {
-            return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString(CustomerErrorCodes::NOT_FOUND),
-                'Customer does not exist'
-            ));
-        }
-
-        // Domain commands use simplified rules - no verification requirement
-        if (!preg_match(CustomerErrorCodes::NAME_PATTERN, $command->newName)) {
-            return Result::failure(ErrorDetail::create(
-                ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
-                'Name must be 2-100 characters and contain no special characters'
-            ));
-        }
-
-        $event = new CustomerRenamed(
-            EventId::generate(),
-            $this->getTenantId(),
-            CorrelationId::generate(),
-            CausationId::generate(),
-            new \DateTimeImmutable(),
-            $command->aggregate_id,
-            $command->newName
-        );
-        // Note: Do NOT call raise() here - events are returned for caller to apply
-        return Result::success([$event]);
-    }
 
     public function apply(DomainEvent $event): void
     {
         match (true) {
-            // Domain events (simple, for testing)
-            $event instanceof CustomerCreated => $this->applyCreated($event),
-            $event instanceof CustomerRenamed => $this->applyDomainRenamed($event),
-            // Event-sourced events (full metadata)
             $event instanceof EventCustomerRenamed => $this->applyRenamed($event),
             $event instanceof CustomerRegistered => $this->applyRegistered($event),
             $event instanceof CustomerEmailVerified => $this->applyVerified($event),
             $event instanceof CustomerDeactivated => $this->applyDeactivated($event),
             $event instanceof CustomerReactivated => $this->applyReactivated($event),
-            default => null,
+            default => throw new \RuntimeException(
+                sprintf('Unknown event type: %s', $event::class)
+            ),
         };
     }
 
-    private function applyCreated(CustomerCreated $event): void
-    {
-        $this->name = $event->name;
-    }
-
-    private function applyDomainRenamed(CustomerRenamed $event): void
-    {
-        $this->name = $event->newName;
-    }
 
     private function applyRegistered(CustomerRegistered $event): void
     {
