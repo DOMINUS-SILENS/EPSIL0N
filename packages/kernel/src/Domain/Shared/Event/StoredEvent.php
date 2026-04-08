@@ -27,6 +27,7 @@ final class StoredEvent
         public readonly string $eventClassName,
         public readonly array $payload,
         public readonly EventMetadata $metadata,
+        public readonly ?int $globalPosition = null,
     ) {}
 
     /**
@@ -106,6 +107,8 @@ final class StoredEvent
         $eventTypeStr = $row['event_type'];
         /** @var string $eventClassNameStr */
         $eventClassNameStr = $row['event_class_name'];
+        /** @var int|null $globalPositionInt */
+        $globalPositionInt = isset($row['global_position']) ? (int) $row['global_position'] : null;
 
         $eventId = EventId::fromString($eventIdStr);
         $tenantId = TenantId::fromString($tenantIdStr);
@@ -126,6 +129,7 @@ final class StoredEvent
             eventClassName: $eventClassName,
             payload: $payloadArray,
             metadata: EventMetadata::fromArray($metadataArray),
+            globalPosition: $globalPositionInt,
         );
     }
 }

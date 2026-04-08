@@ -61,7 +61,7 @@ final class PostgreSqlEventStore implements IEventStore
         ?int $maxCount = null,
     ): array {
         $sql = \sprintf(
-            'SELECT * FROM %s WHERE tenant_id = :tenant_id AND stream_id = :stream_id AND stream_version >= :from_version',
+            'SELECT global_position, tenant_id, stream_id, stream_version, event_id, event_type, correlation_id, causation_id, occurred_at, schema_version, payload, metadata FROM %s WHERE tenant_id = :tenant_id AND stream_id = :stream_id AND stream_version >= :from_version',
             $this->quoteIdentifier(self::EVENTS_TABLE)
         );
 
@@ -101,7 +101,7 @@ final class PostgreSqlEventStore implements IEventStore
         ?int $maxCount = null,
     ): array {
         $sql = \sprintf(
-            'SELECT * FROM %s WHERE tenant_id = :tenant_id AND stream_id = :stream_id AND stream_version <= :from_version',
+            'SELECT global_position, tenant_id, stream_id, stream_version, event_id, event_type, correlation_id, causation_id, occurred_at, schema_version, payload, metadata FROM %s WHERE tenant_id = :tenant_id AND stream_id = :stream_id AND stream_version <= :from_version',
             $this->quoteIdentifier(self::EVENTS_TABLE)
         );
 

@@ -105,6 +105,8 @@ final class EventSerializer
         $payloadStr = $row['payload'];
         /** @var string $metadataStr */
         $metadataStr = $row['metadata'];
+        /** @var int|string|null $globalPositionVal */
+        $globalPositionVal = $row['global_position'] ?? null;
 
         return new StoredEvent(
             eventId: EventId::fromString($eventIdStr),
@@ -115,6 +117,7 @@ final class EventSerializer
             eventClassName: $eventClassNameStr,
             payload: $this->decodePayload($payloadStr),
             metadata: EventMetadata::fromArray($this->decodeMetadata($metadataStr)),
+            globalPosition: $globalPositionVal !== null ? (int) $globalPositionVal : null,
         );
     }
 
