@@ -14,6 +14,8 @@ use Spiral\Kernel\Domain\Customer\Event\CustomerEmailVerified;
 use Spiral\Kernel\Domain\Customer\Event\CustomerRenamed as EventCustomerRenamed;
 use Spiral\Kernel\Domain\Customer\Event\CustomerDeactivated;
 use Spiral\Kernel\Domain\Customer\Event\CustomerReactivated;
+use Spiral\Kernel\Domain\Customer\CustomerCreated;
+use Spiral\Kernel\Domain\Customer\CustomerRenamed;
 use Spiral\Kernel\Domain\Customer\CustomerErrorCodes;
 use Spiral\Kernel\Domain\Identity\EventId;
 use Spiral\Kernel\Domain\Identity\CorrelationId;
@@ -203,6 +205,86 @@ final class Customer extends AggregateRoot
         return Result::success(null);
     }
 
+    /**
+     * Handle domain-level commands for testing and internal composition.
+     *
+     * @internal This method is for testing aggregate behavior and internal domain composition.
+     *            Production flows use the Application layer (register(), rename(), etc.)
+     *            which handle authorization, idempotency, and persistence.
+     *
+     * @param CreateCustomer|RenameCustomer $command
+     * @return Result<array<DomainEvent>>
+     */
+    public function decide(CreateCustomer|RenameCustomer $command): Result
+    {
+        return match (true) {
+            $command instanceof CreateCustomer => $this->handleCreateCustomer($command),
+            $command instanceof RenameCustomer => $this->handleRenameCustomer($command),
+        };
+    }
+
+    /**
+     * @internal For testing only
+     * @return Result<array<DomainEvent>>
+     */
+    private function handleCreateCustomer(CreateCustomer $command): Result
+    {
+        // State-based check: customer already exists if name is set
+        if ($this->name !== null) {
+            return Result::failure(ErrorDetail::create(
+                ErrorCode::fromString(CustomerErrorCodes::ALREADY_EXISTS),
+                'Customer already created'
+            ));
+        }
+
+        $event = new CustomerCreated(
+            EventId::generate(),
+            $this->getTenantId(),
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
+            $command->aggregate_id,
+            $command->name
+        );
+
+        return Result::success([$event]);
+    }
+
+    /**
+     * @internal For testing only
+     * @return Result<array<DomainEvent>>
+     */
+    private function handleRenameCustomer(RenameCustomer $command): Result
+    {
+        // Check if customer exists (state-based check)
+        if ($this->name === null) {
+            return Result::failure(ErrorDetail::create(
+                ErrorCode::fromString(CustomerErrorCodes::NOT_FOUND),
+                'Customer does not exist'
+            ));
+        }
+
+        // Domain commands use simplified rules (no verification requirement)
+        if (!preg_match(CustomerErrorCodes::NAME_PATTERN, $command->newName)) {
+            return Result::failure(ErrorDetail::create(
+                ErrorCode::fromString(CustomerErrorCodes::VALIDATION_NAME_INVALID),
+                'Name must be 2-100 characters and contain no special characters'
+            ));
+        }
+
+        $event = new CustomerRenamed(
+            EventId::generate(),
+            $this->getTenantId(),
+            CorrelationId::generate(),
+            CausationId::generate(),
+            new DateTimeImmutable(),
+            $command->aggregate_id,
+            $command->newName
+        );
+
+        return Result::success([$event]);
+    }
+
 
     /**
      * Apply events to mutate state.
@@ -221,6 +303,10 @@ final class Customer extends AggregateRoot
     public function apply(DomainEvent $event): void
     {
         match (true) {
+            // Test events (simple, for decide() testing)
+            $event instanceof CustomerCreated => $this->applyCreated($event),
+            $event instanceof CustomerRenamed => $this->applySimpleRenamed($event),
+            // Event-sourced events (production)
             $event instanceof EventCustomerRenamed => $this->applyRenamed($event),
             $event instanceof CustomerRegistered => $this->applyRegistered($event),
             $event instanceof CustomerEmailVerified => $this->applyVerified($event),
@@ -230,6 +316,17 @@ final class Customer extends AggregateRoot
                 sprintf('Unknown event type: %s', $event::class)
             ),
         };
+    }
+
+
+    private function applyCreated(CustomerCreated $event): void
+    {
+        $this->name = $event->name;
+    }
+
+    private function applySimpleRenamed(CustomerRenamed $event): void
+    {
+        $this->name = $event->newName;
     }
 
 
