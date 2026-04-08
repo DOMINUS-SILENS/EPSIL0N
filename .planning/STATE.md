@@ -47,8 +47,9 @@
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260408-jzs | Fix 7 critical kernel issues: AggregateRoot version tracking, Organization LSP violation, Customer decide() dual path, Money allocate() rounding, TenantSlug validation, EventStoreException, Customer apply() silent event ignore | 2026-04-08 | 7dfeb94 | [260408-jzs-fix-7-critical-kernel-issues-aggregatero](./quick/260408-jzs-fix-7-critical-kernel-issues-aggregatero/) |
+| 260408-m8h | Restore Customer::decide() as @internal test helper with clear separation from production event-sourced API | 2026-04-08 | e288002 | [260408-m8h-feat-restore-decide-test-re-add-customer](./quick/260408-m8h-feat-restore-decide-test-re-add-customer/) |
 
-**Last activity:** 2026-04-08 - Completed quick task 260408-jzs: Fix 7 critical kernel issues
+**Last activity:** 2026-04-08 - Completed quick task 260408-m8h: Restore Customer::decide() as @internal test helper
 
 ---
 *State initialized 2026-04-04*
