@@ -204,6 +204,20 @@ final class Customer extends AggregateRoot
     }
 
 
+    /**
+     * Apply events to mutate state.
+     *
+     * Handles the following events:
+     * - CustomerRegistered: Register new customer
+     * - CustomerEmailVerified: Mark email as verified
+     * - CustomerRenamed (event-sourced): Rename customer
+     * - CustomerDeactivated: Deactivate customer
+     * - CustomerReactivated: Reactivate customer
+     *
+     * Throws RuntimeException for unknown event types (fail-fast pattern).
+     *
+     * @throws \RuntimeException If event type is unknown
+     */
     public function apply(DomainEvent $event): void
     {
         match (true) {
