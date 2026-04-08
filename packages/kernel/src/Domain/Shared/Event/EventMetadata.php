@@ -63,7 +63,7 @@ final class EventMetadata
     }
 
     /**
-     * @param array<string, string> $data
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -75,14 +75,18 @@ final class EventMetadata
         $correlationIdStr = $data['correlationId'];
         /** @var non-empty-string $causationIdStr */
         $causationIdStr = $data['causationId'];
+        /** @var string $occurredAtStr */
+        $occurredAtStr = $data['occurredAt'];
+        /** @var string $schemaVersionStr */
+        $schemaVersionStr = $data['schemaVersion'];
 
         return new self(
             eventId: EventId::fromString($eventIdStr),
             tenantId: TenantId::fromString($tenantIdStr),
             correlationId: CorrelationId::fromString($correlationIdStr),
             causationId: CausationId::fromString($causationIdStr),
-            occurredAt: new \DateTimeImmutable($data['occurredAt']),
-            schemaVersion: $data['schemaVersion'],
+            occurredAt: new \DateTimeImmutable($occurredAtStr),
+            schemaVersion: $schemaVersionStr,
         );
     }
 }

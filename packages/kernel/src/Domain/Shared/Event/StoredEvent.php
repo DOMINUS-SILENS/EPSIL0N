@@ -107,8 +107,14 @@ final class StoredEvent
         $eventTypeStr = $row['event_type'];
         /** @var string $eventClassNameStr */
         $eventClassNameStr = $row['event_class_name'];
+
+        // Extract global position from database row if available
         /** @var int|null $globalPositionInt */
-        $globalPositionInt = isset($row['global_position']) ? (int) $row['global_position'] : null;
+        $globalPositionInt = null;
+        if (!empty($row['global_position'])) {
+            /** @phpstan-ignore-next-line Cast is safe: database column is BIGINT */
+            $globalPositionInt = (int) $row['global_position'];
+        }
 
         $eventId = EventId::fromString($eventIdStr);
         $tenantId = TenantId::fromString($tenantIdStr);
