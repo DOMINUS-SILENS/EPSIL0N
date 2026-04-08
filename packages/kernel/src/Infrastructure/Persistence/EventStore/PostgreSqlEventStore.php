@@ -11,7 +11,7 @@ use Spiral\Kernel\Domain\Shared\Event\ExpectedVersion;
 use Spiral\Kernel\Domain\Shared\Event\StoredEvent;
 use Spiral\Kernel\Infrastructure\Contract\EventStore\IEventStore;
 use Spiral\Kernel\Support\Exception\ConcurrencyConflictException;
-use Spiral\Kernel\Support\Exception\KernelException;
+use Spiral\Kernel\Support\Exception\EventStoreException;
 
 /**
  * PostgreSQL implementation of the Event Store.
@@ -78,15 +78,20 @@ final class PostgreSqlEventStore implements IEventStore
             $sql .= ' ORDER BY stream_version ASC';
         }
 
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return \array_map(
-            fn(array $row) => StoredEvent::fromDatabaseRow($row),
-            $rows
-        );
+            return \array_map(
+                fn(array $row) => StoredEvent::fromDatabaseRow($row),
+                $rows
+            );
+        } catch (\PDOException $e) {
+            $reason = $this->buildErrorReason($e, "loading events from stream version $fromVersion");
+            throw EventStoreException::failedToLoad($streamId, $reason, $e);
+        }
     }
 
     public function loadReverse(
@@ -113,15 +118,20 @@ final class PostgreSqlEventStore implements IEventStore
             $sql .= ' ORDER BY stream_version DESC';
         }
 
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return \array_map(
-            fn(array $row) => StoredEvent::fromDatabaseRow($row),
-            $rows
-        );
+            return \array_map(
+                fn(array $row) => StoredEvent::fromDatabaseRow($row),
+                $rows
+            );
+        } catch (\PDOException $e) {
+            $reason = $this->buildErrorReason($e, "loading events in reverse from stream version $fromVersion");
+            throw EventStoreException::failedToLoad($streamId, $reason, $e);
+        }
     }
 
     public function getStreamVersion(TenantId $tenantId, string $streamId): int
@@ -131,22 +141,27 @@ final class PostgreSqlEventStore implements IEventStore
             $this->quoteIdentifier(self::STREAMS_TABLE)
         );
 
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute([
-            'tenant_id' => $tenantId->toString(),
-            'stream_id' => $streamId,
-        ]);
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([
+                'tenant_id' => $tenantId->toString(),
+                'stream_id' => $streamId,
+            ]);
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        /** @var array<string, mixed>|false $row */
-        if ($row === false) {
-            return 0;
+            /** @var array<string, mixed>|false $row */
+            if ($row === false) {
+                return 0;
+            }
+
+            /** @var int $version */
+            $version = $row['version'];
+            return $version;
+        } catch (\PDOException $e) {
+            $reason = $this->buildErrorReason($e, 'unable to determine stream version');
+            throw EventStoreException::failedToLoad($streamId, $reason, $e);
         }
-
-        /** @var int $version */
-        $version = $row['version'];
-        return $version;
     }
 
     private function validateExpectedVersion(
@@ -227,6 +242,11 @@ final class PostgreSqlEventStore implements IEventStore
             $stmtOutbox = $this->connection->prepare($outboxSql);
             $version = $currentVersion + 1;
 
+            // Extract correlation and causation from first event for error context
+            $firstEvent = $events[0] ?? null;
+            $correlationId = $firstEvent !== null ? $firstEvent->getCorrelationId()->toString() : null;
+            $causationId = $firstEvent !== null ? $firstEvent->getCausationId()->toString() : null;
+
             foreach ($events as $event) {
                 $storedEvent = $this->serializer->serialize($event, $streamId, $version);
                 $row = $this->serializer->toDatabaseRow($storedEvent);
@@ -278,20 +298,62 @@ final class PostgreSqlEventStore implements IEventStore
                 );
             }
 
-            // Use RuntimeException as KernelException is abstract and we don't have a generic concrete implementation
-            throw new \RuntimeException(
-                'Database error during event append operation',
-                previous: $e,
+            // Build detailed error reason with full context
+            $eventCount = \count($events);
+            $newVersion = $currentVersion + $eventCount;
+            $reason = \sprintf(
+                'append %d events to stream "%s" (tenant=%s, version %d→%d): %s',
+                $eventCount,
+                $streamId,
+                $tenantId->toString(),
+                $currentVersion,
+                $newVersion,
+                $this->buildErrorReason($e, 'database error')
             );
+
+            // Add causation context if available
+            if (!empty($events)) {
+                $firstEvent = $events[0];
+                $correlationIdStr = $firstEvent->getCorrelationId()->toString();
+                $causationIdStr = $firstEvent->getCausationId()->toString();
+
+                if ($correlationIdStr || $causationIdStr) {
+                    $reason .= ' (';
+                    if ($correlationIdStr) {
+                        $reason .= "correlation=$correlationIdStr";
+                    }
+                    if ($causationIdStr) {
+                        $reason .= ($correlationIdStr ? ', ' : '') . "causation=$causationIdStr";
+                    }
+                    $reason .= ')';
+                }
+            }
+
+            throw EventStoreException::failedToAppend($streamId, $reason, $e);
         } catch (\Throwable $e) {
             $this->connection->rollBack();
 
-            // Avoid instantiating abstract KernelException directly
-            throw new \RuntimeException(
-                'Unexpected failure during event append operation',
-                previous: $e,
+            // Wrap any other exception with EventStoreException
+            $reason = \sprintf(
+                'append %d events to stream "%s": unexpected failure during event persistence',
+                \count($events),
+                $streamId
             );
+            throw EventStoreException::failedToAppend($streamId, $reason, $e);
         }
+    }
+
+    private function buildErrorReason(\PDOException $e, string $context): string
+    {
+        $errorCode = $e->getCode();
+
+        return match ($errorCode) {
+            '08006', '08003' => "$context — database connection error: {$e->getMessage()}",
+            '42P01' => "$context — event stream table missing: {$e->getMessage()}",
+            '42703' => "$context — corrupted event stream schema: {$e->getMessage()}",
+            '23503' => "$context — foreign key constraint violated: {$e->getMessage()}",
+            default => "$context — {$e->getMessage()}",
+        };
     }
 
     private function quoteIdentifier(string $identifier): string
