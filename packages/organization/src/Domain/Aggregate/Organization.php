@@ -9,6 +9,9 @@ use Spiral\Kernel\Domain\Identity\CorrelationId;
 use Spiral\Kernel\Domain\Identity\TenantId;
 use Spiral\Kernel\Domain\Shared\Aggregate\AggregateRoot;
 use Spiral\Kernel\Domain\Shared\Event\DomainEvent;
+use Spiral\Kernel\Domain\Shared\Error\ErrorCode;
+use Spiral\Kernel\Domain\Shared\Error\ErrorDetail;
+use Spiral\Kernel\Domain\Shared\Result\Result;
 use Spiral\Kernel\Domain\Shared\ValueObject\Temporal\TimezoneId;
 use Spiral\Kernel\Domain\Tenancy\EmailAddress;
 use Spiral\Kernel\Domain\Tenancy\TenantSlug;
@@ -18,6 +21,7 @@ use Spiral\Organization\Domain\Event\OrganizationRegistered;
 use Spiral\Organization\Domain\Event\OrganizationRenamed;
 use Spiral\Organization\Domain\Event\OrganizationSlugChanged;
 use Spiral\Organization\Domain\Event\OrganizationTimezoneChanged;
+use Spiral\Organization\Domain\OrganizationErrorCodes;
 use Spiral\Organization\Domain\ValueObject\OrganizationId;
 
 /**
@@ -87,18 +91,24 @@ final class Organization extends AggregateRoot
 
     /**
      * Rename the organization.
+     *
+     * @return Result<null>
      */
     public function rename(
         CorrelationId $correlationId,
         CausationId $causationId,
         string $newName
-    ): void {
+    ): Result {
         if ($newName === '') {
-            throw new \InvalidArgumentException('Organization name cannot be empty');
+            return Result::failure(ErrorDetail::withContextData(
+                ErrorCode::fromString(OrganizationErrorCodes::VALIDATION_NAME_EMPTY),
+                'Organization name cannot be empty',
+                ['field' => 'name']
+            ));
         }
 
         if ($newName === $this->name) {
-            return; // No change needed
+            return Result::success(null); // No change needed
         }
 
         $event = OrganizationRenamed::create(
@@ -111,6 +121,8 @@ final class Organization extends AggregateRoot
         );
 
         $this->raise($event);
+
+        return Result::success(null);
     }
 
     /**
@@ -209,8 +221,11 @@ final class Organization extends AggregateRoot
      * Apply domain events to mutate state.
      *
      * This is called internally by raise() and reconstituteFromEvents().
+     * Throws RuntimeException for unknown event types (fail-fast pattern).
+     *
+     * @throws \RuntimeException When unknown event type is encountered
      */
-    protected function apply(object $event): void
+    protected function apply(DomainEvent $event): void
     {
         match ($event::class) {
             OrganizationRegistered::class => $this->applyRegistered($event),
@@ -220,7 +235,11 @@ final class Organization extends AggregateRoot
             OrganizationActivated::class => $this->applyActivated($event),
             OrganizationDeactivated::class => $this->applyDeactivated($event),
             default => throw new \RuntimeException(
-                sprintf('Unknown event type: %s', $event::class)
+                sprintf(
+                    'Unknown event type: %s (error: %s)',
+                    $event::class,
+                    OrganizationErrorCodes::UNKNOWN_EVENT
+                )
             ),
         };
     }

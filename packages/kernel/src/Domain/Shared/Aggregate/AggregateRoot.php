@@ -98,6 +98,12 @@ abstract class AggregateRoot
      * - Idempotent: Re-applying same event produces equivalent result
      * - Isolated: Changes only aggregate state, no side effects
      *
+     * Subclasses may throw exceptions for unknown event types (fail-fast pattern).
+     * This is the contract for event handling: either handle all known event types
+     * or throw explicitly.
+     *
+     * @throws \RuntimeException If the event type is unknown or cannot be handled
+     *
      * Subclasses must implement this to handle their specific event types.
      */
     abstract protected function apply(DomainEvent $event): void;
