@@ -10,6 +10,7 @@ use Spiral\Kernel\Domain\Identity\CorrelationId;
 use Spiral\Kernel\Domain\Identity\EventId;
 use Spiral\Kernel\Domain\Identity\TenantId;
 use Spiral\Kernel\Domain\Shared\Event\DomainEvent;
+use Spiral\Kernel\Domain\Sync\SyncMetadata;
 use Spiral\Organization\Domain\ValueObject\OrganizationId;
 
 /**
@@ -86,6 +87,11 @@ final class OrganizationActivated implements DomainEvent
             'eventType' => $this->getEventType(),
             'organizationId' => $this->organizationId->toString(),
         ];
+    }
+
+    public function getSyncMetadata(): ?SyncMetadata
+    {
+        return null;
     }
 
     /**

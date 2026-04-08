@@ -6,101 +6,102 @@ namespace Spiral\Kernel\Tests\Unit\Domain\Customer;
 
 use PHPUnit\Framework\TestCase;
 use Spiral\Kernel\Domain\Customer\Customer;
-use Spiral\Kernel\Domain\Customer\CreateCustomer;
-use Spiral\Kernel\Domain\Customer\RenameCustomer;
-use Spiral\Kernel\Domain\Customer\CustomerCreated;
-use Spiral\Kernel\Domain\Customer\CustomerRenamed;
-use RuntimeException;
+use Spiral\Kernel\Domain\Customer\Event\CustomerRegistered;
+use Spiral\Kernel\Domain\Customer\Event\CustomerRenamed;
+use Spiral\Kernel\Domain\Identity\TenantId;
+use Spiral\Kernel\Domain\Identity\CorrelationId;
+use Spiral\Kernel\Domain\Identity\CausationId;
+use Spiral\Kernel\Domain\Tenancy\EmailAddress;
 
 final class CustomerTest extends TestCase
 {
     public function test_determinism(): void
     {
-        $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
-        $cmd1 = new CreateCustomer('c1', 'a1', 'Alice');
-        $cmd2 = new RenameCustomer('c2', 'a1', 'Alice Revised');
+        $tenantId = TenantId::generate();
+        $correlationId = CorrelationId::generate();
+        $causationId = CausationId::generate();
+        $email = EmailAddress::fromString('alice@example.com');
 
         // Run 1
         $customer1 = new Customer('c1', $tenantId);
-        $res1 = $customer1->decide($cmd1);
-        $events1 = $res1->unwrap();
-        $customer1->apply($events1[0]);
-        $res2 = $customer1->decide($cmd2);
-        $events2 = $res2->unwrap();
-        $customer1->apply($events2[0]);
+        $customer1->register('c1', 'Alice', $email, $correlationId, $causationId);
+        $nameAfterRun1 = $customer1->getName();
 
         // Run 2
         $customer2 = new Customer('c1', $tenantId);
-        $res3 = $customer2->decide($cmd1);
-        $events3 = $res3->unwrap();
-        $customer2->apply($events3[0]);
-        $res4 = $customer2->decide($cmd2);
-        $events4 = $res4->unwrap();
-        $customer2->apply($events4[0]);
+        $customer2->register('c1', 'Alice', $email, $correlationId, $causationId);
+        $nameAfterRun2 = $customer2->getName();
 
-        // Check determinism on domain payload (not EventIds which are generated)
-        $this->assertSame($events1[0]->toArray(), $events3[0]->toArray());
-        $this->assertSame($events2[0]->toArray(), $events4[0]->toArray());
-        $this->assertSame($customer1->getName(), $customer2->getName());
+        // Same operations produce same state
+        $this->assertSame($nameAfterRun1, $nameAfterRun2);
+        $this->assertSame('Alice', $customer1->getName());
+        $this->assertSame('Alice', $customer2->getName());
     }
 
-    public function test_purity(): void
+    public function test_register_produces_event(): void
     {
-        $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
+        $tenantId = TenantId::generate();
+        $correlationId = CorrelationId::generate();
+        $causationId = CausationId::generate();
+        $email = EmailAddress::fromString('alice@example.com');
+
         $customer = new Customer('c1', $tenantId);
-        $cmd = new CreateCustomer('c1', 'a1', 'Alice');
+        $result = $customer->register('c1', 'Alice', $email, $correlationId, $causationId);
 
-        $res = $customer->decide($cmd);
-
-        // State must not change during decide()
-        $this->assertNull($customer->getName());
-        $this->assertCount(1, $res->unwrap());
+        $this->assertTrue($result->isSuccess());
+        $this->assertTrue($customer->hasUncommittedEvents());
+        $this->assertSame('Alice', $customer->getName());
     }
 
-    public function test_rejection_safety_create_twice(): void
+    public function test_register_twice_fails(): void
     {
-        $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
+        $tenantId = TenantId::generate();
+        $correlationId = CorrelationId::generate();
+        $causationId = CausationId::generate();
+        $email = EmailAddress::fromString('alice@example.com');
+
         $customer = new Customer('c1', $tenantId);
-        $cmd1 = new CreateCustomer('c1', 'a1', 'Alice');
-        $res1 = $customer->decide($cmd1);
-        $events1 = $res1->unwrap();
-        $customer->apply($events1[0]);
+        $result1 = $customer->register('c1', 'Alice', $email, $correlationId, $causationId);
+        $this->assertTrue($result1->isSuccess());
 
-        $cmd2 = new CreateCustomer('c2', 'a1', 'Bob');
-
-        $res2 = $customer->decide($cmd2);
-        $this->assertTrue($res2->isFailure());
+        // Second registration should fail
+        $result2 = $customer->register('c1', 'Bob', $email, $correlationId, $causationId);
+        $this->assertTrue($result2->isFailure());
     }
 
-    public function test_rejection_safety_rename_before_create(): void
+    public function test_rename_before_register_fails(): void
     {
-        $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
-        $customer = new Customer('c1', $tenantId);
-        $cmd = new RenameCustomer('c1', 'a1', 'Alice');
+        $tenantId = TenantId::generate();
+        $correlationId = CorrelationId::generate();
+        $causationId = CausationId::generate();
 
-        $res = $customer->decide($cmd);
-        $this->assertTrue($res->isFailure());
+        $customer = new Customer('c1', $tenantId);
+        // Rename without register should fail (customer doesn't exist)
+        $result = $customer->rename('c1', 'Alice Revised', $correlationId, $causationId);
+        $this->assertTrue($result->isFailure());
     }
 
     public function test_replay_correctness(): void
     {
-        $tenantId = \Spiral\Kernel\Domain\Identity\TenantId::generate();
-        $events = [
-            CustomerCreated::forTest('a1', 'Alice'),
-            CustomerRenamed::forTest('a1', 'Alice Revised'),
-        ];
+        $tenantId = TenantId::generate();
+        $correlationId = CorrelationId::generate();
+        $causationId = CausationId::generate();
+        $email = EmailAddress::fromString('alice@example.com');
 
+        // Create customer and register
         $customer = new Customer('a1', $tenantId);
+        $customer->register('a1', 'Alice', $email, $correlationId, $causationId);
+        $customer->verifyEmail('a1', $correlationId, $causationId);
+        $customer->rename('a1', 'Alice Revised', $correlationId, $causationId);
 
-        // Use reflection to call protected apply() for unit testing replay
-        $reflection = new \ReflectionClass(Customer::class);
-        $method = $reflection->getMethod('apply');
-        $method->setAccessible(true);
+        // Extract events
+        $events = $customer->getUncommittedEvents();
 
-        foreach ($events as $event) {
-            $method->invoke($customer, $event);
-        }
+        // Reconstitute new customer from events
+        $customer2 = new Customer('a1', $tenantId);
+        $customer2->reconstituteFromEvents($events, count($events));
 
-        $this->assertSame('Alice Revised', $customer->getName());
+        $this->assertSame('Alice Revised', $customer2->getName());
+        $this->assertTrue($customer2->isVerified());
     }
 }

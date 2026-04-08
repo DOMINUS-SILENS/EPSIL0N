@@ -10,6 +10,7 @@ use Spiral\Kernel\Domain\Shared\Error\ErrorDetail;
 use Spiral\Kernel\Domain\Shared\Result\Result;
 use Spiral\Organization\Application\Command\RegisterOrganization;
 use Spiral\Organization\Domain\Aggregate\Organization;
+use Spiral\Organization\Domain\OrganizationErrorCodes;
 use Spiral\Organization\Domain\Repository\IOrganizationRepository;
 use Spiral\Organization\Domain\ValueObject\OrganizationId;
 
@@ -30,10 +31,10 @@ final class RegisterOrganizationHandler
         // Validate business rules
         if ($command->name === '') {
             return Result::failure(
-                ErrorDetail::create(
-                    code: ErrorCode::validation('ORGANIZATION.NAME_EMPTY'),
+                ErrorDetail::withContextData(
+                    code: ErrorCode::fromString(OrganizationErrorCodes::VALIDATION_NAME_EMPTY),
                     message: 'Organization name cannot be empty',
-                    fieldErrors: ['name' => ['Name is required']]
+                    contextData: ['field' => 'name']
                 )
             );
         }

@@ -12,6 +12,7 @@ use Spiral\Kernel\Domain\Shared\ValueObject\ValueObject;
 use Spiral\Kernel\Infrastructure\Contract\EventStore\IEventStore;
 use Spiral\Kernel\Infrastructure\Contract\Persistence\IRepository;
 use Spiral\Kernel\Infrastructure\Persistence\EventStore\EventHydrator;
+use Spiral\Kernel\Support\Exception\NotFoundException;
 
 /**
  * Generic Event-Sourced Repository.
@@ -23,7 +24,7 @@ use Spiral\Kernel\Infrastructure\Persistence\EventStore\EventHydrator;
  * @template TId of ValueObject
  * @implements IRepository<T, TId>
  */
-class EventSourcedRepository implements IRepository
+final class EventSourcedRepository implements IRepository
 {
     /**
      * @param IEventStore $eventStore The underlying event store
@@ -51,7 +52,7 @@ class EventSourcedRepository implements IRepository
 
         try {
             $storedEvents = $this->eventStore->load($tenantId, $streamId);
-        } catch (\Throwable) {
+        } catch (NotFoundException) {
             return null;
         }
         $version = $this->eventStore->getStreamVersion($tenantId, $streamId);
@@ -81,7 +82,7 @@ class EventSourcedRepository implements IRepository
         $tenantId = $aggregate->getTenantId();
         $streamId = $this->resolveStreamId($aggregate->getId());
 
-        $expectedVersion = $aggregate->getStreamVersion() === -1
+        $expectedVersion = $aggregate->getStreamVersion() === 0
             ? ExpectedVersion::noStream()
             : ExpectedVersion::exact($aggregate->getStreamVersion());
 

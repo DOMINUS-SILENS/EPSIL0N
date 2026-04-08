@@ -10,6 +10,7 @@ use Spiral\Kernel\Domain\Identity\CorrelationId;
 use Spiral\Kernel\Domain\Identity\EventId;
 use Spiral\Kernel\Domain\Identity\TenantId;
 use Spiral\Kernel\Domain\Shared\Event\DomainEvent;
+use Spiral\Kernel\Domain\Sync\SyncMetadata;
 use Spiral\Kernel\Domain\Tenancy\EmailAddress;
 use Spiral\Kernel\Domain\Tenancy\TenantSlug;
 use Spiral\Organization\Domain\ValueObject\OrganizationId;
@@ -124,6 +125,11 @@ final class OrganizationRegistered implements DomainEvent
             'contactEmail' => $this->contactEmail->toString(),
             'timezone' => (string) $this->timezone,
         ];
+    }
+
+    public function getSyncMetadata(): ?SyncMetadata
+    {
+        return null;
     }
 
     /**

@@ -10,6 +10,7 @@ use Spiral\Kernel\Domain\Shared\Error\ErrorCode;
 use Spiral\Kernel\Domain\Shared\Error\ErrorDetail;
 use Spiral\Kernel\Domain\Shared\Result\Result;
 use Spiral\Organization\Application\Command\RenameOrganization;
+use Spiral\Organization\Domain\OrganizationErrorCodes;
 use Spiral\Organization\Domain\Repository\IOrganizationRepository;
 
 /**
@@ -26,10 +27,10 @@ final class RenameOrganizationHandler
     {
         if ($command->newName === '') {
             return Result::failure(
-                ErrorDetail::create(
-                    code: ErrorCode::validation('ORGANIZATION.NAME_EMPTY'),
+                ErrorDetail::withContextData(
+                    code: ErrorCode::fromString(OrganizationErrorCodes::VALIDATION_NAME_EMPTY),
                     message: 'Organization name cannot be empty',
-                    fieldErrors: ['name' => ['Name is required']]
+                    contextData: ['field' => 'name']
                 )
             );
         }
@@ -44,11 +45,15 @@ final class RenameOrganizationHandler
 
         // Apply the change
         $causationId = CausationId::fromString($command->causationId->toString());
-        $organization->rename(
+        $renameResult = $organization->rename(
             $command->correlationId,
             $causationId,
             $command->newName
         );
+
+        if ($renameResult->isFailure()) {
+            return $renameResult;
+        }
 
         // Persist
         return $this->repository->save($organization);

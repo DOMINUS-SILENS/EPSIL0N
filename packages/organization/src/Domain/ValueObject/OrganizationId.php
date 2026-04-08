@@ -39,10 +39,6 @@ final class OrganizationId extends ValueObject
      */
     public static function fromString(string $uuidString): self
     {
-        if ($uuidString === '') {
-            throw new \InvalidArgumentException('OrganizationId cannot be empty');
-        }
-
         if (!Uuid::isValid($uuidString)) {
             throw new \InvalidArgumentException(
                 sprintf('Invalid OrganizationId format: "%s"', $uuidString)

@@ -280,7 +280,7 @@ final class PostgreSqlEventStore implements IEventStore
 
             // Use RuntimeException as KernelException is abstract and we don't have a generic concrete implementation
             throw new \RuntimeException(
-                \sprintf('Database error during event append to stream "%s": %s', $streamId, $e->getMessage()),
+                'Database error during event append operation',
                 previous: $e,
             );
         } catch (\Throwable $e) {
@@ -288,7 +288,7 @@ final class PostgreSqlEventStore implements IEventStore
 
             // Avoid instantiating abstract KernelException directly
             throw new \RuntimeException(
-                \sprintf('Unexpected failure during event append to stream "%s": %s', $streamId, $e->getMessage()),
+                'Unexpected failure during event append operation',
                 previous: $e,
             );
         }

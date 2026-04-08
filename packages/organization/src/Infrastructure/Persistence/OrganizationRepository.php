@@ -46,8 +46,8 @@ final class OrganizationRepository implements IOrganizationRepository
     {
         $streamId = $this->buildStreamId($organizationId);
 
-        // Check if stream exists
-        if (!$this->eventStore->streamExists($tenantId, $streamId)) {
+        // Check if stream exists (version > 0 means stream exists)
+        if ($this->eventStore->getStreamVersion($tenantId, $streamId) === 0) {
             return Result::failure(
                 ErrorDetail::withContextData(
                     code: ErrorCode::fromString(ErrorCode::NOT_FOUND),
@@ -143,7 +143,7 @@ final class OrganizationRepository implements IOrganizationRepository
     public function exists(TenantId $tenantId, OrganizationId $organizationId): bool
     {
         $streamId = $this->buildStreamId($organizationId);
-        return $this->eventStore->streamExists($tenantId, $streamId);
+        return $this->eventStore->getStreamVersion($tenantId, $streamId) > 0;
     }
 
     public function loadAll(TenantId $tenantId): Result

@@ -57,7 +57,7 @@ final class OrganizationTest extends TestCase
         self::assertEquals($email, $organization->getContactEmail());
         self::assertEquals($timezone, $organization->getTimezone());
         self::assertTrue($organization->isActive());
-        self::assertSame(-1, $organization->getStreamVersion()); // Marked as new
+        self::assertSame(0, $organization->getStreamVersion()); // Marked as new (not yet persisted)
     }
 
     public function test_register_raises_organization_registered_event(): void
@@ -110,10 +110,10 @@ final class OrganizationTest extends TestCase
     {
         $organization = $this->createOrganization();
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Organization name cannot be empty');
+        $result = $organization->rename($this->correlationId, $this->causationId, '');
 
-        $organization->rename($this->correlationId, $this->causationId, '');
+        self::assertFalse($result->isSuccess());
+        self::assertSame('VALIDATION.NAME_EMPTY', $result->error()->code()->code());
     }
 
     public function test_deactivate_marks_inactive_and_raises_event(): void
