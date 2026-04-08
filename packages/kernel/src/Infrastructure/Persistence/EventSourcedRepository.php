@@ -12,6 +12,9 @@ use Spiral\Kernel\Domain\Shared\ValueObject\ValueObject;
 use Spiral\Kernel\Infrastructure\Contract\EventStore\IEventStore;
 use Spiral\Kernel\Infrastructure\Contract\Persistence\IRepository;
 use Spiral\Kernel\Infrastructure\Persistence\EventStore\EventHydrator;
+use Spiral\Kernel\Support\Exception\ConcurrencyConflictException;
+use Spiral\Kernel\Support\Exception\DomainException;
+use Spiral\Kernel\Support\Exception\EventStoreException;
 use Spiral\Kernel\Support\Exception\NotFoundException;
 
 /**
@@ -71,6 +74,9 @@ final class EventSourcedRepository implements IRepository
      * Persists uncommitted events from an aggregate.
      *
      * @param T $aggregate
+     * @throws ConcurrencyConflictException If expected version doesn't match
+     * @throws DomainException On structural errors
+     * @throws EventStoreException On database failures or unexpected persistence errors
      */
     public function save(AggregateRoot $aggregate): void
     {
@@ -86,15 +92,64 @@ final class EventSourcedRepository implements IRepository
             ? ExpectedVersion::noStream()
             : ExpectedVersion::exact($aggregate->getStreamVersion());
 
-        /** @var list<DomainEvent> $events */
-        $newVersion = $this->eventStore->append(
-            $tenantId,
-            $streamId,
-            $expectedVersion,
-            $events
-        );
+        try {
+            /** @var list<DomainEvent> $events */
+            $newVersion = $this->eventStore->append(
+                $tenantId,
+                $streamId,
+                $expectedVersion,
+                $events
+            );
 
-        $aggregate->markCommitted($newVersion);
+            $aggregate->markCommitted($newVersion);
+        } catch (ConcurrencyConflictException $e) {
+            // Re-throw concurrency conflicts as-is; they already have version context
+            throw $e;
+        } catch (DomainException $e) {
+            // Re-throw domain exceptions as-is; they indicate structural errors
+            throw $e;
+        } catch (EventStoreException $e) {
+            // Re-throw event store exceptions as-is; they indicate persistence failures
+            throw $e;
+        } catch (\Throwable $e) {
+            // Wrap any other unexpected exceptions with aggregate and event context
+            $contextMessage = $this->buildErrorContextMessage($aggregate, $events, $streamId);
+            throw EventStoreException::failedToAppend(
+                $streamId,
+                $contextMessage
+            );
+        }
+    }
+
+    /**
+     * Build an informative error context message from aggregate and event information.
+     *
+     * @param AggregateRoot $aggregate The aggregate being saved
+     * @param list<DomainEvent> $events The uncommitted events
+     * @param string $streamId The stream identifier
+     */
+    private function buildErrorContextMessage(AggregateRoot $aggregate, array $events, string $streamId): string
+    {
+        $aggregateId = $aggregate->getId();
+        $tenantId = $aggregate->getTenantId()->toString();
+        $correlationId = 'N/A';
+        $causationId = 'N/A';
+
+        if (\count($events) > 0) {
+            $firstEvent = $events[0];
+            $correlationId = $firstEvent->getCorrelationId()->toString();
+            $causationId = $firstEvent->getCausationId()->toString();
+        }
+
+        return \sprintf(
+            '[%s:%s] for tenant [%s] (events: %d, correlation: %s, causation: %s)',
+            $this->streamPrefix,
+            $aggregateId,
+            $tenantId,
+            \count($events),
+            $correlationId,
+            $causationId
+        );
     }
 
     private function resolveStreamId(string $id): string
