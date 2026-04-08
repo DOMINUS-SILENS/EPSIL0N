@@ -41,9 +41,6 @@ final class TenantSlug extends ValueObject
 
     private function __construct(string $slug)
     {
-        if ($slug === '') {
-            throw new \InvalidArgumentException('TenantSlug cannot be empty');
-        }
         /** @var non-empty-string $slug */
         $this->slug = $slug;
     }
@@ -72,31 +69,32 @@ final class TenantSlug extends ValueObject
             );
         }
 
-        // Must start with a letter
-        if (!preg_match('/^[a-z]/', $slug)) {
-            throw new \InvalidArgumentException(
-                'TenantSlug must start with a lowercase letter'
-            );
-        }
+        // Pattern: starts with letter, followed by alphanumerics/hyphens (no consecutive hyphens)
+        // ^[a-z]           - must start with lowercase letter
+        // [a-z0-9]*        - optional alphanumerics
+        // (?:\-[a-z0-9]+)* - optional hyphens followed by alphanumerics (prevents consecutive hyphens)
+        // $                - must end with alphanumeric (guaranteed by pattern)
+        if (!preg_match('/^[a-z][a-z0-9]*(?:\-[a-z0-9]+)*$/', $slug)) {
+            if (!preg_match('/^[a-z]/', $slug)) {
+                throw new \InvalidArgumentException(
+                    'TenantSlug must start with a lowercase letter'
+                );
+            }
 
-        // Must end with a letter or number
-        if (!preg_match('/[a-z0-9]$/', $slug)) {
-            throw new \InvalidArgumentException(
-                'TenantSlug must end with a lowercase letter or number'
-            );
-        }
+            if (!preg_match('/[a-z0-9]$/', $slug)) {
+                throw new \InvalidArgumentException(
+                    'TenantSlug must end with a lowercase letter or number'
+                );
+            }
 
-        // Only lowercase letters, numbers, and hyphens
-        if (!preg_match('/^[a-z][a-z0-9\-]*[a-z0-9]$/', $slug)) {
-            throw new \InvalidArgumentException(
-                'TenantSlug can only contain lowercase letters, numbers, and hyphens'
-            );
-        }
+            if (str_contains($slug, '--')) {
+                throw new \InvalidArgumentException(
+                    'TenantSlug cannot contain consecutive hyphens'
+                );
+            }
 
-        // No consecutive hyphens
-        if (str_contains($slug, '--')) {
             throw new \InvalidArgumentException(
-                'TenantSlug cannot contain consecutive hyphens'
+                'TenantSlug must contain only lowercase letters, numbers, and hyphens'
             );
         }
 
