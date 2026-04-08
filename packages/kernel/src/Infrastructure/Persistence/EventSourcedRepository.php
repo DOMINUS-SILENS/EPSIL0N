@@ -112,11 +112,13 @@ final class EventSourcedRepository implements IRepository
             // Re-throw event store exceptions as-is; they indicate persistence failures
             throw $e;
         } catch (\Throwable $e) {
-            // Wrap any other unexpected exceptions with aggregate and event context
+            // Wrap any other unexpected exceptions with aggregate and event context,
+            // preserving the original exception as the cause
             $contextMessage = $this->buildErrorContextMessage($aggregate, $events, $streamId);
             throw EventStoreException::failedToAppend(
                 $streamId,
-                $contextMessage
+                $contextMessage,
+                $e
             );
         }
     }

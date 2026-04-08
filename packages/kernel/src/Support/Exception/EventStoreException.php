@@ -14,31 +14,43 @@ namespace Spiral\Kernel\Support\Exception;
  */
 class EventStoreException extends KernelException
 {
-    public static function failedToAppend(string $streamId, string $reason): self
+    public static function failedToAppend(string $streamId, string $reason, ?\Throwable $previous = null): self
     {
-        return new self(\sprintf(
-            'Failed to append events to stream "%s": %s',
-            $streamId,
-            $reason
-        ));
+        return new self(
+            \sprintf(
+                'Failed to append events to stream "%s": %s',
+                $streamId,
+                $reason
+            ),
+            0,
+            $previous
+        );
     }
 
-    public static function failedToLoad(string $streamId, string $reason): self
+    public static function failedToLoad(string $streamId, string $reason, ?\Throwable $previous = null): self
     {
-        return new self(\sprintf(
-            'Failed to load stream "%s": %s',
-            $streamId,
-            $reason
-        ));
+        return new self(
+            \sprintf(
+                'Failed to load stream "%s": %s',
+                $streamId,
+                $reason
+            ),
+            0,
+            $previous
+        );
     }
 
-    public static function invalidStreamState(string $streamId, string $detail): self
+    public static function invalidStreamState(string $streamId, string $detail, ?\Throwable $previous = null): self
     {
-        return new self(\sprintf(
-            'Invalid stream state for "%s": %s',
-            $streamId,
-            $detail
-        ));
+        return new self(
+            \sprintf(
+                'Invalid stream state for "%s": %s',
+                $streamId,
+                $detail
+            ),
+            0,
+            $previous
+        );
     }
 
     public function getErrorCode(): string
