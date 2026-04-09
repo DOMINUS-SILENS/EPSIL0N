@@ -1,0 +1,7 @@
+{
+  "route": "/operations/tasks/:id",
+  "aggregate": "Task",
+  "roles": ["OperationsLead", "FieldAgent", "Support"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

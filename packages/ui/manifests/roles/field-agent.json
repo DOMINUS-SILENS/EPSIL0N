@@ -1,0 +1,9 @@
+{
+  "role": "FieldAgent",
+  "default_landing_intents": ["create", "assign", "close"],
+  "priority_alerts": ["recoverable", "blocking"],
+  "visible_aggregates": ["Task", "Order", "NotificationException"],
+  "default_audit_visibility": "low",
+  "allowed_action_clusters": ["AssignTask"],
+  "mobile_urgency_profile": "high"
+}

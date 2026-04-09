@@ -1,0 +1,23 @@
+{
+  "aggregate": "UserAccessGrant",
+  "identity_fields": ["user_name", "role_name", "scope_name"],
+  "primary_status": "grant_state",
+  "secondary_statuses": ["sync_state", "review_state"],
+  "critical_metrics": ["expires_at", "scope_count"],
+  "risk_markers": ["security_sensitive", "stale", "requires_reauth"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner", "DecisionPanel"],
+  "actions": [
+    {
+      "name": "ApproveUserAccessGrant",
+      "visible_if": ["role:Admin"],
+      "enabled_if": ["grant_state:pending"],
+      "blocked_reason_if_disabled": "Grant is not pending approval",
+      "policy_source": "kernel.authorization.user_access_grant.approve",
+      "requires_secondary_auth": true,
+      "requires_justification": true,
+      "audit_classification": "security_access",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

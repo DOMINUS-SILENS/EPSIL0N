@@ -1,0 +1,9 @@
+{
+  "role": "Support",
+  "default_landing_intents": ["correct", "escalate", "trace"],
+  "priority_alerts": ["failed", "blocking", "security_boundary_violation"],
+  "visible_aggregates": ["Customer", "Task", "NotificationException", "UserAccessGrant"],
+  "default_audit_visibility": "medium",
+  "allowed_action_clusters": ["UpdateCustomerCredit", "AssignTask", "EscalateNotificationException"],
+  "mobile_urgency_profile": "medium"
+}

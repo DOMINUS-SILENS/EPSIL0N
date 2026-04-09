@@ -1,0 +1,9 @@
+{
+  "role": "APClerk",
+  "default_landing_intents": ["validate", "correct"],
+  "priority_alerts": ["blocking", "recoverable"],
+  "visible_aggregates": ["Invoice", "Payment", "ApprovalRequest"],
+  "default_audit_visibility": "summary",
+  "allowed_action_clusters": ["capture", "validate", "submit", "correct"],
+  "mobile_urgency_profile": "high"
+}

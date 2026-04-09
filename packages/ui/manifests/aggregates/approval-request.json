@@ -1,0 +1,23 @@
+{
+  "aggregate": "ApprovalRequest",
+  "identity_fields": ["request_id", "request_type", "submitted_by"],
+  "primary_status": "approval_state",
+  "secondary_statuses": ["sync_state", "deadline_state"],
+  "critical_metrics": ["approval_count", "deadline_at"],
+  "risk_markers": ["expired", "stale", "escalated"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner", "ApprovalStack"],
+  "actions": [
+    {
+      "name": "ResolveApprovalRequest",
+      "visible_if": ["role:Approver", "role:Admin"],
+      "enabled_if": ["approval_state:pending"],
+      "blocked_reason_if_disabled": "Approval request is not pending",
+      "policy_source": "kernel.authorization.approval_request.resolve",
+      "requires_secondary_auth": false,
+      "requires_justification": true,
+      "audit_classification": "approval_resolution",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

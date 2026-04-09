@@ -1,0 +1,9 @@
+{
+  "role": "FinanceManager",
+  "default_landing_intents": ["approve", "reconcile", "trace"],
+  "priority_alerts": ["conflicted", "failed", "integrity_risk"],
+  "visible_aggregates": ["Invoice", "Payment", "ApprovalRequest", "AuditEntry", "Customer"],
+  "default_audit_visibility": "medium",
+  "allowed_action_clusters": ["ApproveInvoice", "ReconcilePayment", "UpdateCustomerCredit", "TraceAuditEntry"],
+  "mobile_urgency_profile": "high"
+}

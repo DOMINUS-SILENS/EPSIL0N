@@ -1,0 +1,9 @@
+{
+  "role": "Auditor",
+  "default_landing_intents": ["trace", "reconcile"],
+  "priority_alerts": ["integrity_risk", "security_boundary_violation", "conflicted"],
+  "visible_aggregates": ["AuditEntry", "Invoice", "Payment", "UserAccessGrant", "ApprovalRequest"],
+  "default_audit_visibility": "high",
+  "allowed_action_clusters": ["TraceAuditEntry"],
+  "mobile_urgency_profile": "low"
+}

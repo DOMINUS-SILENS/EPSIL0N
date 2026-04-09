@@ -1,0 +1,3 @@
+import { defineComponentContract } from "../../../semanticContracts";
+
+export const componentContract = defineComponentContract({ manifest: "packages/ui/manifests/components/notification-exception-record-card.json", component: "NotificationExceptionRecordCard", aggregate: "NotificationException", states: ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"], primitives: ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "ConflictBanner", "ExceptionDrawer", "SyncBadge"], roles: ["Support", "Admin", "FieldAgent"] });

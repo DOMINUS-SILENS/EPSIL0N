@@ -1,0 +1,23 @@
+{
+  "aggregate": "StockItem",
+  "identity_fields": ["sku", "description", "site"],
+  "primary_status": "availability_state",
+  "secondary_statuses": ["sync_state", "reorder_state"],
+  "critical_metrics": ["on_hand", "allocated", "available_to_promise"],
+  "risk_markers": ["below_safety_stock", "stale", "count_variance"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "AdjustStockItem",
+      "visible_if": ["role:WarehouseOperator", "role:OperationsLead"],
+      "enabled_if": ["availability_state:active"],
+      "blocked_reason_if_disabled": "Stock item is not adjustable",
+      "policy_source": "kernel.authorization.stock_item.adjust",
+      "requires_secondary_auth": true,
+      "requires_justification": true,
+      "audit_classification": "inventory_adjustment",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

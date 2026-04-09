@@ -1,0 +1,15 @@
+{
+  "action": "TraceAuditEntry",
+  "command": "TraceAuditEntryQuery",
+  "aggregate": "AuditEntry",
+  "visibleIf": ["role:Auditor", "role:Admin", "role:FinanceManager"],
+  "enabledIf": ["audit_state:visible"],
+  "requiresSecondaryAuth": false,
+  "requiresJustification": false,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

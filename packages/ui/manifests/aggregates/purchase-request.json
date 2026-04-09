@@ -1,0 +1,23 @@
+{
+  "aggregate": "PurchaseRequest",
+  "identity_fields": ["request_number", "requester_name", "estimated_total"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "approval_state", "budget_state"],
+  "critical_metrics": ["estimated_total", "needed_by_date"],
+  "risk_markers": ["budget_blocked", "stale", "supplier_gap"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "ApprovePurchaseRequest",
+      "visible_if": ["role:Approver", "role:OperationsLead"],
+      "enabled_if": ["approval_state:pending"],
+      "blocked_reason_if_disabled": "Request is not pending approval",
+      "policy_source": "kernel.authorization.purchase_request.approve",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "procurement_approval",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

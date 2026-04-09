@@ -1,0 +1,3 @@
+import { defineActionContract } from "../../../semanticContracts";
+
+export const actionContract = defineActionContract({ manifest: "packages/ui/manifests/actions/approve-invoice.json", action: "ApproveInvoice", aggregate: "Invoice", command: "ApproveInvoiceCommand", visibleIf: ["role:FinanceManager", "role:Approver"], enabledIf: ["approval_state:pending", "lifecycle_state:submitted"], requiresSecondaryAuth: false, requiresJustification: false, truthOutcomes: { "200": "CommittedState", "202": "PendingState", "403": "PermissionBlock", "409": "ConflictBanner", "422": "ExceptionDrawer" } });

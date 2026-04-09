@@ -1,0 +1,9 @@
+{
+  "role": "FinanceController",
+  "default_landing_intents": ["reconcile", "trace", "approve"],
+  "priority_alerts": ["integrity_risk", "irreversible_action_warning", "blocking"],
+  "visible_aggregates": ["Invoice", "Payment", "AuditEntry", "ApprovalRequest"],
+  "default_audit_visibility": "expanded",
+  "allowed_action_clusters": ["approve", "close", "reverse", "reconcile", "trace"],
+  "mobile_urgency_profile": "medium"
+}

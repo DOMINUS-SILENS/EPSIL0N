@@ -1,0 +1,17 @@
+{
+  "aggregate": "invoice",
+  "identity_fields": ["invoiceNumber", "vendorId", "tenantId"],
+  "primary_status_source": "lifecycle_state",
+  "secondary_status_source": "latency_truth",
+  "critical_metrics": ["grossAmount", "dueDate", "approvalCount"],
+  "risk_markers": ["duplicateSuspected", "policyRejected", "paymentBlocked"],
+  "required_actions_by_state": {
+    "draft": ["validate", "submit"],
+    "submitted": ["approve", "reject"],
+    "approved": ["queue-payment"],
+    "paid": ["trace", "reconcile"],
+    "rejected": ["correct", "escalate"]
+  },
+  "audit_visibility_threshold": "recoverable",
+  "mobile_visibility_profile": "operator-safe"
+}

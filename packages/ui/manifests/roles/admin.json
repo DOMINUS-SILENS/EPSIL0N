@@ -1,0 +1,9 @@
+{
+  "role": "Admin",
+  "default_landing_intents": ["trace", "approve", "escalate"],
+  "priority_alerts": ["security_boundary_violation", "integrity_risk", "blocking"],
+  "visible_aggregates": ["UserAccessGrant", "AuditEntry", "NotificationException", "ApprovalRequest"],
+  "default_audit_visibility": "high",
+  "allowed_action_clusters": ["ApproveUserAccessGrant", "ResolveApprovalRequest", "EscalateNotificationException", "TraceAuditEntry"],
+  "mobile_urgency_profile": "high"
+}

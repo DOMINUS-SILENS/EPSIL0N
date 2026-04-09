@@ -1,0 +1,9 @@
+{
+  "role": "Approver",
+  "default_landing_intents": ["approve", "trace"],
+  "priority_alerts": ["blocking", "irreversible_action_warning", "conflicted"],
+  "visible_aggregates": ["Invoice", "ApprovalRequest", "PurchaseRequest", "StockMovement", "Payment"],
+  "default_audit_visibility": "medium",
+  "allowed_action_clusters": ["ApproveInvoice", "ResolveApprovalRequest", "ApprovePurchaseRequest", "ApproveStockMovement", "ReconcilePayment"],
+  "mobile_urgency_profile": "medium"
+}

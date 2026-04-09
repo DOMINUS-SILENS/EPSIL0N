@@ -1,0 +1,23 @@
+{
+  "aggregate": "Invoice",
+  "identity_fields": ["invoice_number", "vendor_name", "total_amount"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "approval_state", "payment_state"],
+  "critical_metrics": ["total_amount", "due_date", "outstanding_balance"],
+  "risk_markers": ["overdue", "stale", "blocked", "disputed"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "ApproveInvoice",
+      "visible_if": ["role:FinanceManager", "role:Approver"],
+      "enabled_if": ["approval_state:pending", "lifecycle_state:submitted"],
+      "blocked_reason_if_disabled": "Approval threshold not met",
+      "policy_source": "kernel.authorization.invoice.approve",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "financial_approval",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

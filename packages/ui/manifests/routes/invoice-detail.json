@@ -1,0 +1,7 @@
+{
+  "route": "/finance/invoices/:id",
+  "aggregate": "Invoice",
+  "roles": ["FinanceManager", "Approver", "Auditor"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

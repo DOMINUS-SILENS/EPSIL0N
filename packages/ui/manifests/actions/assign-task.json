@@ -1,0 +1,16 @@
+{
+  "action": "AssignTask",
+  "command": "AssignTaskCommand",
+  "aggregate": "Task",
+  "visibleIf": ["role:OperationsLead", "role:Support"],
+  "enabledIf": ["assignment_state:unassigned"],
+  "requiresSecondaryAuth": false,
+  "requiresJustification": false,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "202": "PendingState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

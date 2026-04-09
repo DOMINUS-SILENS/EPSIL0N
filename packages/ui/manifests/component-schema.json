@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epsilone.local/schemas/component-schema.json",
+  "title": "Semantic Component Manifest",
+  "type": "object",
+  "required": [
+    "component",
+    "supports_states",
+    "role_visibility",
+    "truth_protocol_bindings",
+    "exception_handling",
+    "aria_requirements"
+  ],
+  "properties": {
+    "component": {
+      "type": "string",
+      "minLength": 1
+    },
+    "supports_states": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "role_visibility": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "truth_protocol_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "exception_handling": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "aria_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

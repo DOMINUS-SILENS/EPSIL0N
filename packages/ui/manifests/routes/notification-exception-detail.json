@@ -1,0 +1,7 @@
+{
+  "route": "/ops/exceptions/:id",
+  "aggregate": "NotificationException",
+  "roles": ["Support", "Admin", "FieldAgent"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "ConflictBanner", "ExceptionDrawer", "SyncBadge"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

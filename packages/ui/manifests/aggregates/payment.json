@@ -1,0 +1,23 @@
+{
+  "aggregate": "Payment",
+  "identity_fields": ["payment_reference", "counterparty_name", "amount"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "reconciliation_state"],
+  "critical_metrics": ["amount", "value_date"],
+  "risk_markers": ["unapplied", "stale", "reversal_risk"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "ReconcilePayment",
+      "visible_if": ["role:FinanceManager", "role:Approver"],
+      "enabled_if": ["reconciliation_state:unreconciled"],
+      "blocked_reason_if_disabled": "Payment is already reconciled",
+      "policy_source": "kernel.authorization.payment.reconcile",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "financial_reconciliation",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

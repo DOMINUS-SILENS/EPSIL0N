@@ -1,0 +1,24 @@
+{
+  "component": "DecisionPanel",
+  "aggregate": "DecisionSurface",
+  "supports_states": [
+    "loading",
+    "ready",
+    "pending",
+    "accepted",
+    "stale",
+    "conflicted",
+    "rejected",
+    "failed",
+    "unauthorized",
+    "archived"
+  ],
+  "primitives_used": ["DecisionPanel", "StateStrip", "ActionCluster"],
+  "truth_protocol_bindings": {
+    "202": "PendingState",
+    "200": "CommittedState",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  },
+  "role_support": ["FinanceManager", "Approver", "Admin"]
+}

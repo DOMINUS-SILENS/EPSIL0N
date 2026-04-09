@@ -1,0 +1,23 @@
+{
+  "aggregate": "AuditEntry",
+  "identity_fields": ["event_id", "aggregate_type", "actor_id"],
+  "primary_status": "audit_state",
+  "secondary_statuses": ["visibility_state"],
+  "critical_metrics": ["occurred_at", "event_count"],
+  "risk_markers": ["integrity_risk", "security_boundary_violation"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "AuditRail", "ConflictBanner", "SyncBadge"],
+  "actions": [
+    {
+      "name": "TraceAuditEntry",
+      "visible_if": ["role:Auditor", "role:Admin", "role:FinanceManager"],
+      "enabled_if": ["audit_state:visible"],
+      "blocked_reason_if_disabled": "Audit entry is not visible in current scope",
+      "policy_source": "kernel.authorization.audit_entry.trace",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "audit_trace",
+      "truth_outcomes": ["200", "403", "409", "422"]
+    }
+  ]
+}

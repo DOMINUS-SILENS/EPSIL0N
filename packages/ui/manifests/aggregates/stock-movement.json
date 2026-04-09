@@ -1,0 +1,23 @@
+{
+  "aggregate": "StockMovement",
+  "identity_fields": ["movement_number", "sku", "quantity"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "approval_state"],
+  "critical_metrics": ["quantity", "source_location", "target_location"],
+  "risk_markers": ["negative_stock_risk", "stale", "conflict_detected"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "ApproveStockMovement",
+      "visible_if": ["role:OperationsLead", "role:Approver"],
+      "enabled_if": ["approval_state:pending"],
+      "blocked_reason_if_disabled": "Movement is not awaiting approval",
+      "policy_source": "kernel.authorization.stock_movement.approve",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "inventory_flow",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

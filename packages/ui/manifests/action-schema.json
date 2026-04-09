@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epsilone.local/schemas/action-contract.json",
+  "title": "Action Contract",
+  "type": "object",
+  "required": [
+    "action",
+    "command",
+    "aggregate",
+    "visibleIf",
+    "enabledIf",
+    "requiresSecondaryAuth",
+    "requiresJustification",
+    "truthOutcomes"
+  ],
+  "additionalProperties": false
+}

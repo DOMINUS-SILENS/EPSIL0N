@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epsilon-frontend
+  labels:
+    app.kubernetes.io/name: epsilon-frontend
+    app.kubernetes.io/managed-by: blueprint-compiler
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: epsilon-frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: epsilon-frontend
+        app.kubernetes.io/managed-by: blueprint-compiler
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/example/epsilon-frontend:placeholder
+          env:
+            - name: EPSILON_FRONTEND_SEMANTIC_HASH
+              valueFrom:
+                configMapKeyRef:
+                  name: epsilon-frontend-semantic
+                  key: semanticHash
+          readinessProbe:
+            exec:
+              command:
+                - node
+                - /app/tooling/verifySemanticManifest.mjs
+                - --manifest=/app/semantic-manifest.json
+          livenessProbe:
+            exec:
+              command:
+                - node
+                - /app/tooling/verifySemanticManifest.mjs
+                - --manifest=/app/semantic-manifest.json

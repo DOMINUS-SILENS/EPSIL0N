@@ -1,0 +1,14 @@
+[
+  "Invoice",
+  "Customer",
+  "Order",
+  "Payment",
+  "StockItem",
+  "StockMovement",
+  "PurchaseRequest",
+  "ApprovalRequest",
+  "Task",
+  "UserAccessGrant",
+  "AuditEntry",
+  "NotificationException"
+]

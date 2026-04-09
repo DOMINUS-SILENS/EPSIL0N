@@ -1,0 +1,23 @@
+{
+  "aggregate": "Customer",
+  "identity_fields": ["customer_number", "display_name", "credit_status"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "credit_state"],
+  "critical_metrics": ["credit_limit", "outstanding_balance"],
+  "risk_markers": ["blocked", "stale", "compliance_hold"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "UpdateCustomerCredit",
+      "visible_if": ["role:FinanceManager", "role:Support"],
+      "enabled_if": ["lifecycle_state:active"],
+      "blocked_reason_if_disabled": "Customer is not active",
+      "policy_source": "kernel.authorization.customer.credit_update",
+      "requires_secondary_auth": true,
+      "requires_justification": true,
+      "audit_classification": "credit_policy",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

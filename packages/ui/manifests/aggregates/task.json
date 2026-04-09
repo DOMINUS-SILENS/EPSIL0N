@@ -1,0 +1,23 @@
+{
+  "aggregate": "Task",
+  "identity_fields": ["task_number", "assignee_name", "task_type"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "assignment_state"],
+  "critical_metrics": ["due_at", "priority"],
+  "risk_markers": ["overdue", "stale", "blocked"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "AssignTask",
+      "visible_if": ["role:OperationsLead", "role:Support"],
+      "enabled_if": ["assignment_state:unassigned"],
+      "blocked_reason_if_disabled": "Task is already assigned",
+      "policy_source": "kernel.authorization.task.assign",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "task_assignment",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

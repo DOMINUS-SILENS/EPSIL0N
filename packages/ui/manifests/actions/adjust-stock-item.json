@@ -1,0 +1,16 @@
+{
+  "action": "AdjustStockItem",
+  "command": "AdjustStockItemCommand",
+  "aggregate": "StockItem",
+  "visibleIf": ["role:WarehouseOperator", "role:OperationsLead"],
+  "enabledIf": ["availability_state:active"],
+  "requiresSecondaryAuth": true,
+  "requiresJustification": true,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "202": "PendingState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

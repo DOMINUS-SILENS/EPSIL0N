@@ -1,0 +1,17 @@
+{
+  "aggregate": "journal-entry",
+  "identity_fields": ["entryNumber", "tenantId", "periodId"],
+  "primary_status_source": "lifecycle_state",
+  "secondary_status_source": "latency_truth",
+  "critical_metrics": ["debitTotal", "creditTotal", "lineCount"],
+  "risk_markers": ["periodLocked", "reconciliationMismatch", "approvalRequired"],
+  "required_actions_by_state": {
+    "draft": ["validate", "submit"],
+    "validated": ["approve", "correct"],
+    "approved": ["post"],
+    "posted": ["trace", "reconcile"],
+    "reversed": ["trace"]
+  },
+  "audit_visibility_threshold": "recoverable",
+  "mobile_visibility_profile": "summary-only"
+}

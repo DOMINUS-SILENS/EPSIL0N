@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epsilone.local/schemas/role-contract.json",
+  "title": "Role Attention Contract",
+  "type": "object",
+  "required": [
+    "role",
+    "default_landing_intents",
+    "priority_alerts",
+    "visible_aggregates",
+    "default_audit_visibility",
+    "allowed_action_clusters",
+    "mobile_urgency_profile"
+  ],
+  "additionalProperties": false
+}

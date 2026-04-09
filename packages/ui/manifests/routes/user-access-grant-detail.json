@@ -1,0 +1,7 @@
+{
+  "route": "/security/access-grants/:id",
+  "aggregate": "UserAccessGrant",
+  "roles": ["Admin", "Auditor", "Support"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner", "DecisionPanel"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

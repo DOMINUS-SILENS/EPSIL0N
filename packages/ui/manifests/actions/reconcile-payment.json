@@ -1,0 +1,16 @@
+{
+  "action": "ReconcilePayment",
+  "command": "ReconcilePaymentCommand",
+  "aggregate": "Payment",
+  "visibleIf": ["role:FinanceManager", "role:Approver"],
+  "enabledIf": ["reconciliation_state:unreconciled"],
+  "requiresSecondaryAuth": false,
+  "requiresJustification": false,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "202": "PendingState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

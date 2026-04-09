@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://epsilone.local/schemas/route-contract.json",
+  "title": "Route Contract",
+  "type": "object",
+  "required": [
+    "route",
+    "aggregate",
+    "roles",
+    "primitives",
+    "states"
+  ],
+  "additionalProperties": false
+}

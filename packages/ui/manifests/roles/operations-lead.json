@@ -1,0 +1,9 @@
+{
+  "role": "OperationsLead",
+  "default_landing_intents": ["assign", "approve", "close"],
+  "priority_alerts": ["blocking", "conflicted", "failed"],
+  "visible_aggregates": ["Order", "StockMovement", "Task", "PurchaseRequest", "StockItem"],
+  "default_audit_visibility": "medium",
+  "allowed_action_clusters": ["ReleaseOrder", "ApproveStockMovement", "AssignTask", "ApprovePurchaseRequest", "AdjustStockItem"],
+  "mobile_urgency_profile": "high"
+}

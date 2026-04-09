@@ -1,0 +1,23 @@
+{
+  "aggregate": "Order",
+  "identity_fields": ["order_number", "customer_name", "order_total"],
+  "primary_status": "lifecycle_state",
+  "secondary_statuses": ["sync_state", "fulfillment_state"],
+  "critical_metrics": ["order_total", "promised_date"],
+  "risk_markers": ["allocation_blocked", "stale", "split_required"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "actions": [
+    {
+      "name": "ReleaseOrder",
+      "visible_if": ["role:OperationsLead"],
+      "enabled_if": ["lifecycle_state:approved"],
+      "blocked_reason_if_disabled": "Order is not approved for release",
+      "policy_source": "kernel.authorization.order.release",
+      "requires_secondary_auth": false,
+      "requires_justification": false,
+      "audit_classification": "fulfillment_release",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "route": "/crm/customers/:id",
+  "aggregate": "Customer",
+  "roles": ["FinanceManager", "Support", "Auditor"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

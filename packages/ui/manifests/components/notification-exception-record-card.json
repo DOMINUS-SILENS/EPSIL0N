@@ -1,0 +1,8 @@
+{
+  "component": "NotificationExceptionRecordCard",
+  "aggregate": "NotificationException",
+  "supports_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "primitives_used": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "ConflictBanner", "ExceptionDrawer", "SyncBadge"],
+  "truth_protocol_bindings": {"202": "PendingState", "200": "CommittedState", "409": "ConflictBanner", "422": "ExceptionDrawer"},
+  "role_support": ["Support", "Admin", "FieldAgent"]
+}

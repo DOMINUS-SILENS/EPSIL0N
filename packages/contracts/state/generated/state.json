@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "canonicalViewStates": [
+    "empty",
+    "loading",
+    "partial",
+    "ready",
+    "pending",
+    "accepted",
+    "processing",
+    "synced",
+    "stale",
+    "conflicted",
+    "rejected",
+    "failed",
+    "unauthorized",
+    "archived"
+  ],
+  "latencyTruthStates": [
+    "locally_staged",
+    "durably_queued",
+    "server_processing",
+    "server_committed",
+    "server_rejected",
+    "server_conflicted",
+    "sync_not_yet_reconciled"
+  ],
+  "exceptionSeverities": [
+    "informational",
+    "recoverable",
+    "blocking",
+    "integrity_risk",
+    "security_boundary_violation",
+    "irreversible_action_warning"
+  ],
+  "permissionEffects": [
+    "hidden",
+    "disabled",
+    "enabled"
+  ]
+}

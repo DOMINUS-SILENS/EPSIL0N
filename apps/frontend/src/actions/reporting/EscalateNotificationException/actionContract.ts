@@ -1,0 +1,3 @@
+import { defineActionContract } from "../../../semanticContracts";
+
+export const actionContract = defineActionContract({ manifest: "packages/ui/manifests/actions/escalate-notification-exception.json", action: "EscalateNotificationException", aggregate: "NotificationException", command: "EscalateNotificationExceptionCommand", visibleIf: ["role:Support", "role:Admin"], enabledIf: ["ack_state:unresolved"], requiresSecondaryAuth: false, requiresJustification: true, truthOutcomes: { "200": "CommittedState", "202": "PendingState", "403": "PermissionBlock", "409": "ConflictBanner", "422": "ExceptionDrawer" } });

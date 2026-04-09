@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+php packages/ui/linter/bin/frontend-filesystem-lint.php
+php packages/ui/compiler/bin/blueprint-compiler.php
+node apps/frontend/tooling/semanticAstReconciler.mjs --mode=pre-commit --tsconfig=apps/frontend/tsconfig.json
+node apps/frontend/tooling/generateSemanticManifest.mjs

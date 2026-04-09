@@ -1,0 +1,17 @@
+{
+    "generatedAt": "2026-04-09T07:14:49+00:00",
+    "hardFailures": [],
+    "warnings": [],
+    "aggregateCoverage": 12,
+    "roleCoverage": 10,
+    "routeCoverage": 12,
+    "componentCoverage": 13,
+    "actionCoverage": 12,
+    "sourceStatus": {
+        "frontendSourcePresent": true,
+        "frontendRoot": "apps/frontend/src",
+        "routeContractsBound": 12,
+        "componentContractsBound": 13,
+        "actionContractsBound": 12
+    }
+}

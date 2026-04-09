@@ -1,0 +1,23 @@
+{
+  "aggregate": "NotificationException",
+  "identity_fields": ["exception_id", "source_context", "severity"],
+  "primary_status": "severity",
+  "secondary_statuses": ["delivery_state", "ack_state"],
+  "critical_metrics": ["occurred_at", "retry_count"],
+  "risk_markers": ["integrity_risk", "security_boundary_violation", "stale"],
+  "supported_states": ["loading", "ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"],
+  "required_primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "ExceptionDrawer", "ConflictBanner", "SyncBadge"],
+  "actions": [
+    {
+      "name": "EscalateNotificationException",
+      "visible_if": ["role:Support", "role:Admin"],
+      "enabled_if": ["ack_state:unresolved"],
+      "blocked_reason_if_disabled": "Exception is already resolved",
+      "policy_source": "kernel.authorization.notification_exception.escalate",
+      "requires_secondary_auth": false,
+      "requires_justification": true,
+      "audit_classification": "operational_exception",
+      "truth_outcomes": ["200", "202", "403", "409", "422"]
+    }
+  ]
+}

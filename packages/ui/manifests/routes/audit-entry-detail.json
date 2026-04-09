@@ -1,0 +1,7 @@
+{
+  "route": "/audit/entries/:id",
+  "aggregate": "AuditEntry",
+  "roles": ["Auditor", "Admin", "FinanceManager"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "AuditRail", "ConflictBanner", "SyncBadge"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

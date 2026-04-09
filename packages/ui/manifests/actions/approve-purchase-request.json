@@ -1,0 +1,16 @@
+{
+  "action": "ApprovePurchaseRequest",
+  "command": "ApprovePurchaseRequestCommand",
+  "aggregate": "PurchaseRequest",
+  "visibleIf": ["role:Approver", "role:OperationsLead"],
+  "enabledIf": ["approval_state:pending"],
+  "requiresSecondaryAuth": false,
+  "requiresJustification": false,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "202": "PendingState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

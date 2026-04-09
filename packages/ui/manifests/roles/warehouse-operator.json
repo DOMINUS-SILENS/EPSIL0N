@@ -1,0 +1,9 @@
+{
+  "role": "WarehouseOperator",
+  "default_landing_intents": ["create", "validate", "correct"],
+  "priority_alerts": ["blocking", "recoverable"],
+  "visible_aggregates": ["StockItem", "StockMovement", "Task"],
+  "default_audit_visibility": "low",
+  "allowed_action_clusters": ["AdjustStockItem"],
+  "mobile_urgency_profile": "high"
+}

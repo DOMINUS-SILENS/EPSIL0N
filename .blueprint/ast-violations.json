@@ -1,0 +1,7 @@
+{
+  "generatedAt": "2026-04-09T07:15:05.699Z",
+  "mode": "pre-commit",
+  "typeCheckEnabled": false,
+  "tsconfigPath": "apps/frontend/tsconfig.json",
+  "violations": []
+}

@@ -1,0 +1,7 @@
+{
+  "route": "/operations/orders/:id",
+  "aggregate": "Order",
+  "roles": ["OperationsLead", "FieldAgent"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

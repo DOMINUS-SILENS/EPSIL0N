@@ -1,0 +1,16 @@
+{
+  "action": "EscalateNotificationException",
+  "command": "EscalateNotificationExceptionCommand",
+  "aggregate": "NotificationException",
+  "visibleIf": ["role:Support", "role:Admin"],
+  "enabledIf": ["ack_state:unresolved"],
+  "requiresSecondaryAuth": false,
+  "requiresJustification": true,
+  "truthOutcomes": {
+    "200": "CommittedState",
+    "202": "PendingState",
+    "403": "PermissionBlock",
+    "409": "ConflictBanner",
+    "422": "ExceptionDrawer"
+  }
+}

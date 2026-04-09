@@ -1,0 +1,7 @@
+{
+  "route": "/inventory/stock-movements/:id",
+  "aggregate": "StockMovement",
+  "roles": ["WarehouseOperator", "OperationsLead", "Approver"],
+  "primitives": ["RecordCard", "WorkflowHeader", "StateStrip", "ActionCluster", "AuditRail", "SyncBadge", "ConflictBanner"],
+  "states": ["ready", "pending", "accepted", "processing", "synced", "stale", "conflicted", "rejected", "failed", "archived"]
+}

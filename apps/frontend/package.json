@@ -1,0 +1,18 @@
+{
+  "name": "@epsilon/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint:topology": "php ../../packages/ui/linter/bin/frontend-filesystem-lint.php",
+    "blueprint:compile": "php ../../packages/ui/compiler/bin/blueprint-compiler.php",
+    "semantic:ast": "node ./tooling/semanticAstReconciler.mjs --tsconfig=apps/frontend/tsconfig.json",
+    "semantic:ast:pre-commit": "node ./tooling/semanticAstReconciler.mjs --mode=pre-commit --tsconfig=apps/frontend/tsconfig.json",
+    "semantic:manifest": "node ./tooling/generateSemanticManifest.mjs",
+    "semantic:probe": "node ./tooling/verifySemanticManifest.mjs --manifest=apps/frontend/semantic-manifest.json",
+    "semantic:check": "npm run lint:topology && npm run blueprint:compile && npm run semantic:ast -- --type-check && npm run semantic:manifest"
+  },
+  "devDependencies": {
+    "ts-morph": "^27.0.2"
+  }
+}
